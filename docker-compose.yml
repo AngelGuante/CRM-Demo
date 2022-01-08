@@ -1,0 +1,19 @@
+services: 
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=easierclick
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=3!NQHf32+)rC'P_=
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=user@mail.com
+      - PGADMIN_DEFAULT_PASSWORD=x{_)R2Sm=]8FhJP}
+    ports:
+      - 5050:80
