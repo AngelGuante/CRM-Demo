@@ -1,7 +1,7 @@
-// const invoice_typeRoute = require('./invoice_typeRoute.js');
+const login = require('./Login.js');
 
 const setRoutes = express => {
-    // express.use('/invoice_type', invoice_typeRoute);
+    express.use('/Api/Login', login);
 }
 
 module.exports = setRoutes;
