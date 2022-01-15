@@ -6,7 +6,13 @@ const signToken = payload => {
 }
 
 const validateToken = token => {
-    return jwt.verify(token, config.jwtSecret);
+    try{
+        jwt.verify(token.replace('Bearer ', ''), config.jwtSecret);
+        return true;
+    }
+    catch{
+        return;
+    }
 }
 
 module.exports = { signToken, validateToken }
