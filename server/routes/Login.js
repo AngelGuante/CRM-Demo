@@ -8,8 +8,8 @@ const loginService = new LoginService();
 
 router.post('/Access',
     validatorHandler(SendLoginCredentials, 'body'),
-    (req, res) => {
-        const logResult = loginService.SignIn(req.body);
+    async (req, res) => {
+        const logResult = await loginService.SignIn(req.body);
         if(logResult)
             res.send(logResult);
         else

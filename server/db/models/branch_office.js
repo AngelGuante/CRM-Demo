@@ -7,21 +7,14 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    business_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'business',
-        key: 'id'
-      }
-    },
     name: {
       type: DataTypes.STRING(80),
       allowNull: false
     },
     createdat: {
       type: DataTypes.DATEONLY,
-      allowNull: false
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.fn('now')
     }
   }, {
     sequelize,

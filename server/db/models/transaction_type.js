@@ -4,7 +4,7 @@ module.exports = function(sequelize, DataTypes) {
     id: {
       type: DataTypes.SMALLINT,
       allowNull: false,
-      // defaultValue: nextval(seq_transaction_type,regclass),
+      // defaultValue: nextval(seq_transaction_type::regclass),
       primaryKey: true
     },
     branch_office_id: {

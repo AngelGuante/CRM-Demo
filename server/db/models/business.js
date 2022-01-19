@@ -11,9 +11,15 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(80),
       allowNull: true
     },
+    businessnumber: {
+      // autoIncrement: true,
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
     createdat: {
       type: DataTypes.DATEONLY,
-      allowNull: true
+      allowNull: true,
+      defaultValue: Sequelize.Sequelize.fn('now')
     },
     status: {
       type: DataTypes.BOOLEAN,

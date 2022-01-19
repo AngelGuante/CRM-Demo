@@ -134,8 +134,6 @@ function initModels(sequelize) {
   branch_office.hasMany(transaction, { as: "transactions", foreignKey: "branch_office_id"});
   transaction_type.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
   branch_office.hasMany(transaction_type, { as: "transaction_types", foreignKey: "branch_office_id"});
-  branch_office.belongsTo(business, { as: "business", foreignKey: "business_id"});
-  business.hasMany(branch_office, { as: "branch_offices", foreignKey: "business_id"});
   business_branch_office.belongsTo(business, { as: "business", foreignKey: "business_id"});
   business.hasMany(business_branch_office, { as: "business_branch_offices", foreignKey: "business_id"});
   business_owner_business.belongsTo(business, { as: "business", foreignKey: "business_id"});
