@@ -1,5 +1,6 @@
-const { signToken } = require("../libs/jwt.js");
-const { models } = require("../libs/sequelize");
+const { CompareHashPassword } = require('../libs/bcrypt.js');
+const { signToken } = require('../libs/jwt.js');
+const { models } = require('../libs/sequelize');
 
 class LoginService {
     async SignIn(data) {
@@ -19,11 +20,10 @@ class LoginService {
                 } ], attributes: ["name", "password"]
         });
 
-        if(user){
-            if(user.employee.employee_status.id !== 1){
+        if(user) {
+            if(user.employee.employee_status.id !== 1)
                 return `{"status": 401, "title": "${user.employee.employee_status.Name}", "message": "${user.employee.employee_status.description}"}`;
-            }
-            else if(user.password === data.pass && data.businessNumber === user.employee.branch_office.business.businessnumber) {
+            else if(await CompareHashPassword(data.pass, user.password) && data.businessNumber === user.employee.branch_office.business.businessnumber) {
                 const payload = {
                     sub: user.id,
                     role: "Demo Role"
