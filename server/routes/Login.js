@@ -10,10 +10,17 @@ router.post('/Access',
     validatorHandler(SendLoginCredentials, 'body'),
     async (req, res) => {
         const logResult = await loginService.SignIn(req.body);
-        if(logResult)
-            res.send(logResult);
+        
+        if(logResult){
+            const logResultJSON = JSON.parse(logResult);
+
+            if(logResultJSON['status'] === 200)
+               res.status(200).send(logResultJSON);
+            else
+                res.status(401).json(logResultJSON);
+        }
         else
-            res.status(401).json(`{'status': 401, 'message': wrong credentials`);
+            res.status(401).json(JSON.parse(`{"status": 401, "title": "wrong credentials", "message": "wrong credentials"}`));
 });
 
 module.exports = router;
