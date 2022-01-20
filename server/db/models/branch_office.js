@@ -7,11 +7,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    business_id: {
+    company_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'business',
+        model: 'company',
         key: 'id'
       }
     },

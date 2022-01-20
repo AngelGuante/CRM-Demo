@@ -5,10 +5,10 @@ var _amount_on_account = require("./amount_on_account");
 var _branch_office = require("./branch_office");
 var _branch_office_contact = require("./branch_office_contact");
 var _branch_office_product = require("./branch_office_product");
-var _business = require("./business");
-var _business_owner = require("./business_owner");
-var _business_owner_business = require("./business_owner_business");
-var _business_owner_status = require("./business_owner_status");
+var _company = require("./company");
+var _company_owner = require("./company_owner");
+var _company_owner_company = require("./company_owner_company");
+var _company_owner_status = require("./company_owner_status");
 var _contact_type = require("./contact_type");
 var _credit_invoice_detail = require("./credit_invoice_detail");
 var _credit_invoice_last_pay = require("./credit_invoice_last_pay");
@@ -53,10 +53,10 @@ function initModels(sequelize) {
   var branch_office = _branch_office(sequelize, DataTypes);
   var branch_office_contact = _branch_office_contact(sequelize, DataTypes);
   var branch_office_product = _branch_office_product(sequelize, DataTypes);
-  var business = _business(sequelize, DataTypes);
-  var business_owner = _business_owner(sequelize, DataTypes);
-  var business_owner_business = _business_owner_business(sequelize, DataTypes);
-  var business_owner_status = _business_owner_status(sequelize, DataTypes);
+  var company = _company(sequelize, DataTypes);
+  var company_owner = _company_owner(sequelize, DataTypes);
+  var company_owner_company = _company_owner_company(sequelize, DataTypes);
+  var company_owner_status = _company_owner_status(sequelize, DataTypes);
   var contact_type = _contact_type(sequelize, DataTypes);
   var credit_invoice_detail = _credit_invoice_detail(sequelize, DataTypes);
   var credit_invoice_last_pay = _credit_invoice_last_pay(sequelize, DataTypes);
@@ -130,14 +130,14 @@ function initModels(sequelize) {
   branch_office.hasMany(transaction, { as: "transactions", foreignKey: "branch_office_id"});
   transaction_type.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
   branch_office.hasMany(transaction_type, { as: "transaction_types", foreignKey: "branch_office_id"});
-  branch_office.belongsTo(business, { as: "business", foreignKey: "business_id"});
-  business.hasMany(branch_office, { as: "branch_offices", foreignKey: "business_id"});
-  business_owner_business.belongsTo(business, { as: "business", foreignKey: "business_id"});
-  business.hasMany(business_owner_business, { as: "business_owner_businesses", foreignKey: "business_id"});
-  business_owner_business.belongsTo(business_owner, { as: "business_owner", foreignKey: "business_owner_id"});
-  business_owner.hasMany(business_owner_business, { as: "business_owner_businesses", foreignKey: "business_owner_id"});
-  business_owner.belongsTo(business_owner_status, { as: "business_owner_status", foreignKey: "business_owner_status_id"});
-  business_owner_status.hasMany(business_owner, { as: "business_owners", foreignKey: "business_owner_status_id"});
+  branch_office.belongsTo(company, { as: "company", foreignKey: "company_id"});
+  company.hasMany(branch_office, { as: "branch_offices", foreignKey: "company_id"});
+  company_owner_company.belongsTo(company, { as: "company", foreignKey: "company_id"});
+  company.hasMany(company_owner_company, { as: "company_owner_companies", foreignKey: "company_id"});
+  company_owner_company.belongsTo(company_owner, { as: "company_owner", foreignKey: "company_owner_id"});
+  company_owner.hasMany(company_owner_company, { as: "company_owner_companies", foreignKey: "company_owner_id"});
+  company_owner.belongsTo(company_owner_status, { as: "company_owner_status", foreignKey: "company_owner_status_id"});
+  company_owner_status.hasMany(company_owner, { as: "company_owners", foreignKey: "company_owner_status_id"});
   branch_office_contact.belongsTo(contact_type, { as: "contact_type", foreignKey: "contact_type_id"});
   contact_type.hasMany(branch_office_contact, { as: "branch_office_contacts", foreignKey: "contact_type_id"});
   customer_contact.belongsTo(contact_type, { as: "contact_type", foreignKey: "contact_type_id"});
@@ -204,8 +204,8 @@ function initModels(sequelize) {
   seller_client_status.hasMany(customer, { as: "customers", foreignKey: "seller_client_status_id"});
   seller.belongsTo(seller_client_status, { as: "seller_client_status", foreignKey: "seller_client_status_id"});
   seller_client_status.hasMany(seller, { as: "sellers", foreignKey: "seller_client_status_id"});
-  business_owner.belongsTo(subcriptionplan, { as: "subcriptionplan", foreignKey: "subcriptionplan_id"});
-  subcriptionplan.hasMany(business_owner, { as: "business_owners", foreignKey: "subcriptionplan_id"});
+  company_owner.belongsTo(subcriptionplan, { as: "subcriptionplan", foreignKey: "subcriptionplan_id"});
+  subcriptionplan.hasMany(company_owner, { as: "company_owners", foreignKey: "subcriptionplan_id"});
   recurrent_transaction.belongsTo(transaction, { as: "transaction", foreignKey: "transaction_id"});
   transaction.hasMany(recurrent_transaction, { as: "recurrent_transactions", foreignKey: "transaction_id"});
   recurrent_transaction_transaction.belongsTo(transaction, { as: "transaction", foreignKey: "transaction_id"});
@@ -238,10 +238,10 @@ function initModels(sequelize) {
     branch_office,
     branch_office_contact,
     branch_office_product,
-    business,
-    business_owner,
-    business_owner_business,
-    business_owner_status,
+    company,
+    company_owner,
+    company_owner_company,
+    company_owner_status,
     contact_type,
     credit_invoice_detail,
     credit_invoice_last_pay,

@@ -1,17 +1,17 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('business_owner', {
+  return sequelize.define('company_owner', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    business_owner_status_id: {
+    company_owner_status_id: {
       type: DataTypes.SMALLINT,
       allowNull: true,
       references: {
-        model: 'business_owner_status',
+        model: 'company_owner_status',
         key: 'id'
       }
     },
@@ -37,12 +37,12 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'business_owner',
+    tableName: 'company_owner',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "pk_business_owner",
+        name: "pk_company_owner",
         unique: true,
         fields: [
           { name: "id" },

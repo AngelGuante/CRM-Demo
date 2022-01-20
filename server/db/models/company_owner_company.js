@@ -1,36 +1,36 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('business_owner_business', {
+  return sequelize.define('company_owner_company', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    business_owner_id: {
+    company_owner_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'business_owner',
+        model: 'company_owner',
         key: 'id'
       }
     },
-    business_id: {
+    company_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'business',
+        model: 'company',
         key: 'id'
       }
     }
   }, {
     sequelize,
-    tableName: 'business_owner_business',
+    tableName: 'company_owner_company',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "pk_business_owner_business",
+        name: "pk_company_owner_company",
         unique: true,
         fields: [
           { name: "id" },

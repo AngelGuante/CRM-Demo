@@ -11,7 +11,7 @@ class LoginService {
                     include: [ { 
                         model: models.branch_office, as: "branch_office",
                             include: [ {
-                                model: models.business, as: "business"
+                                model: models.company, as: "company"
                             } ],
                     },
                     {
@@ -23,7 +23,7 @@ class LoginService {
         if(user) {
             if(user.employee.employee_status.id !== 1)
                 return `{"status": 401, "title": "${user.employee.employee_status.Name}", "message": "${user.employee.employee_status.description}"}`;
-            else if(await CompareHashPassword(data.pass, user.password) && data.businessNumber === user.employee.branch_office.business.businessnumber) {
+            else if(await CompareHashPassword(data.pass, user.password) && data.companyNumber === user.employee.branch_office.company.companynumber) {
                 const payload = {
                     sub: user.id,
                     role: "Demo Role"
