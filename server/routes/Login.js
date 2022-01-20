@@ -20,7 +20,7 @@ router.post('/Access',
                 res.status(401).json(logResultJSON);
         }
         else
-            res.status(401).json(JSON.parse(`{"status": 401, "title": "wrong credentials", "message": "wrong credentials"}`));
-});
+            res.status(401).json(JSON.parse(`{"status": 401, "title": "Wrong Credentials", "message": "Wrong Credentials"}`));
+    });
 
 module.exports = router;

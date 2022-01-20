@@ -1,5 +1,3 @@
-const { string } = require("joi");
-
 const validatorHandler = (schema, property) => {
     return (req, res, next) => {
         const data = req[property];
