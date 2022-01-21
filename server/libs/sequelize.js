@@ -8,4 +8,4 @@ const sequelize = new Sequelize(config.dbUrl, {
 
 initModels(sequelize);
 
-module. exports = sequelize;
+module.exports = sequelize;

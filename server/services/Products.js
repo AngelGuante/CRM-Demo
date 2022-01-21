@@ -1,4 +1,5 @@
 const { models } = require('../libs/sequelize.js');
+const sequelize = require('../libs/sequelize.js');
 const { getTokenPayload } = require('../libs/jwt.js')
 const { SignedInUsers } = require('../Utils/staticsVariables.js');
 
@@ -11,31 +12,20 @@ class ProductsService {
             code: data.code.toLowerCase(),
             description: data.description.toLowerCase()
         }
-        
-        //Validate id product exist on the all branches offices of one company
-        const productExist = await models.product.findOne({
-            where: { code: dataFormated.code },
-            attributes: ['id']         
-        });
 
         const payload = getTokenPayload(req.headers['authorization']);
         if(payload) {
             const userSigned = SignedInUsers.find(x => x['id'] == payload['sub']);
-
-
-                //         const productExist2 = await models.branch_office.findAll({
-        //                 where: { company_id: userSigned['company_id'] },
-        //                 attributes: ['id'],
-        //                 include: [
-        //                     {
-        //                         models: models.branch_office_product, as: 'branch_office_product'
-        //                     }
-        //                 ] 
-        //             });
-        //         console.log(productExist2);
-
             if(userSigned) {
-                if(!productExist) {
+                //Validate id product exist on the all branches offices of one company
+                const [ productExist ] = await sequelize.query(`
+                SELECT P.code
+                FROM branch_office BO
+                RIGHT JOIN branch_office_product BOP ON BOP.branch_office_id = BO.id
+                RIGHT JOIN product P ON P.id = BOP.product_id
+                WHERE company_id = ${userSigned['company_id']}`);
+
+                if(!productExist.find(x => x['code'] === dataFormated.code)) {
                     const product = await models.product.create(dataFormated);
                     if(product){
                         await models.branch_office_product.create({
