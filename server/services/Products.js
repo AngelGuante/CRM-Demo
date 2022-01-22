@@ -10,8 +10,20 @@ class ProductsService {
             product_status_id: data.status,
             product_type_id: data.type,
             code: data.code.toLowerCase(),
-            description: data.description.toLowerCase()
+            description: data.description.toLowerCase(),
+
+            cost: data.cost,
+            price: data.price
         }
+
+        //If cost or price have value, so, both cost and price shoud have value.
+        if((dataFormated.cost || dataFormated.price) &&
+            !(dataFormated.cost && dataFormated.price))
+                return {
+                    "status": 400,
+                    "title": "Bad Request",
+                    "message": "ValidationError: 'cost' and 'price' should have a valid value"
+                };
 
         const payload = getTokenPayload(req.headers['authorization']);
         if(payload) {
@@ -31,8 +43,8 @@ class ProductsService {
                         await models.branch_office_product.create({
                             branch_office_id: userSigned['branch_office'],
                             product_id: product["id"],
-                            cost: 0,
-                            price: 0,
+                            cost: dataFormated.cost || 0,
+                            price: dataFormated.price || 0,
                             quantity: 0
                         });
                         
