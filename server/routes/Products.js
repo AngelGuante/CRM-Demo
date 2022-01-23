@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { SignedInUsers } = require('../Utils/staticsVariables.js');
 const { tokenValidatorHandler } = require('../Middlewares/token.handler.js');
 const { validatorHandler } = require('../Middlewares/validator.handler.js');
 const { InsertProduct } = require('../libs/joi/productsDTO.js');
