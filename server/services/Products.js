@@ -70,7 +70,6 @@ class ProductsService {
                 }
             }
         } catch (error) {
-            console.log(error);
             return {
                 "status": 500,
                 "title": "Server Error",
