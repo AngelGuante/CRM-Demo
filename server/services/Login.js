@@ -58,7 +58,7 @@ class LoginService {
                     "access": user['access'],
                 });
 
-                return `{"status": 200, "title": "Success", "message": "${token}"}`;
+                return `{"status": 200, "title": "Success", "message": "${token}, ${user['access']}, ${user['permissions']}"}`;
             }
         }
         return;
