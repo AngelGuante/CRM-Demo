@@ -1,6 +1,5 @@
 const { config } = require('../config/config.js');
 const jwt = require('jsonwebtoken');
-const { SignedInUsers } = require('../Utils/staticsVariables.js');
 
 const signToken = payload => {
     return jwt.sign(payload, config.jwtSecret);

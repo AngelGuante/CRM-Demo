@@ -1,6 +1,5 @@
 const { CompareHashPassword } = require('../libs/bcrypt.js');
 const { signToken } = require('../libs/jwt.js');
-const { models } = require('../libs/sequelize');
 const sequelize = require('../libs/sequelize');
 const { SignedInUsers } = require('../Utils/staticsVariables.js');
 
@@ -58,8 +57,6 @@ class LoginService {
                     "permissions": user['permissions'],
                     "access": user['access'],
                 });
-
-                console.log(SignedInUsers);
 
                 return `{"status": 200, "title": "Success", "message": "${token}"}`;
             }
