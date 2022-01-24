@@ -9,19 +9,19 @@ module.exports = function(sequelize, DataTypes) {
     },
     branch_office_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'branch_office',
         key: 'id'
       }
     },
-    name: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    description: {
-      type: DataTypes.STRING(60),
-      allowNull: false
+    job_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'job',
+        key: 'id'
+      }
     }
   }, {
     sequelize,

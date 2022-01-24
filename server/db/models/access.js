@@ -1,36 +1,28 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('job_role', {
+  return sequelize.define('access', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    job_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'job',
-        key: 'id'
-      }
+    name: {
+      type: DataTypes.STRING(50),
+      allowNull: true
     },
-    role_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'role',
-        key: 'id'
-      }
+    description: {
+      type: DataTypes.STRING(60),
+      allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'job_role',
+    tableName: 'access',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "pk_job_role",
+        name: "pk_access",
         unique: true,
         fields: [
           { name: "id" },

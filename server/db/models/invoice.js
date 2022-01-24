@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     invoice_type_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'invoice_type',
         key: 'id'
@@ -17,7 +17,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     invoice_status_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'invoice_status',
         key: 'id'
@@ -25,7 +25,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     createdby_user_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'user',
         key: 'id'
@@ -33,7 +33,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     createdfor_customer_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'customer',
         key: 'id'
@@ -41,7 +41,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     branch_office_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'branch_office',
         key: 'id'

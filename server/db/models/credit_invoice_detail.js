@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     invoice_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'invoice',
         key: 'id'

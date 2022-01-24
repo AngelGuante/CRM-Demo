@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     job_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'job',
         key: 'id'
@@ -17,7 +17,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     employee_status_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'employee_status',
         key: 'id'
@@ -25,7 +25,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     branch_office_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'branch_office',
         key: 'id'

@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     company_owner_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'company_owner',
         key: 'id'
@@ -17,7 +17,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     company_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'company',
         key: 'id'

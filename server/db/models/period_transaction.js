@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     amount_on_account_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'amount_on_account',
         key: 'id'
@@ -17,7 +17,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     closedby_user_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'user',
         key: 'id'

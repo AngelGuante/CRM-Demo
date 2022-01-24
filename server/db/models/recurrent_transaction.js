@@ -8,7 +8,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     transaction_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'transaction',
         key: 'id'
@@ -16,7 +16,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     branch_office_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'branch_office',
         key: 'id'

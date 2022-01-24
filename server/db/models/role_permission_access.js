@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('role_permission', {
+  return sequelize.define('role_permission_access', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     role_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'role',
         key: 'id'
@@ -17,15 +17,31 @@ module.exports = function(sequelize, DataTypes) {
     },
     permission_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'permission',
+        key: 'id'
+      }
+    },
+    access_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'access',
+        key: 'id'
+      }
+    },
+    branch_office_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'branch_office',
         key: 'id'
       }
     }
   }, {
     sequelize,
-    tableName: 'role_permission',
+    tableName: 'role_permission_access',
     schema: 'public',
     timestamps: false,
     indexes: [

@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     seller_client_status_id: {
       type: DataTypes.SMALLINT,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'seller_client_status',
         key: 'id'
@@ -17,7 +17,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     branch_office_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'branch_office',
         key: 'id'

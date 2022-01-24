@@ -10,6 +10,7 @@ module.exports = function(sequelize, DataTypes) {
     product_status_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      defaultValue: 1,
       references: {
         model: 'product_status',
         key: 'id'
@@ -17,7 +18,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     product_type_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'product_type',
         key: 'id'
