@@ -23,7 +23,7 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    newprice: {
+    newcost: {
       type: DataTypes.DECIMAL(19,4),
       allowNull: false
     },

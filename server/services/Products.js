@@ -82,6 +82,12 @@ class ProductsService {
                             newprice: productCreated.price,
                             createdby_user_id: userSigned['id']
                         });
+                        //Save history of change of product cost
+                        await models.history_changes_product_cost.create({
+                            product_id: productCreated.id,
+                            newcost: productCreated.cost,
+                            createdby_user_id: userSigned['id']
+                        });
 
                         return {
                             "status": 201,
