@@ -1,3 +1,4 @@
 const SignedInUsers = [];
+const SelectsTotalRegists = 10;
 
-module.exports = { SignedInUsers };
+module.exports = { SignedInUsers, SelectsTotalRegists };

@@ -2,11 +2,22 @@ const express = require('express');
 const router = express.Router();
 const { tokenValidatorHandler } = require('../Middlewares/token.handler.js');
 const { validatorHandler } = require('../Middlewares/validator.handler.js');
-const { InsertProduct, UpdateProduct } = require('../libs/joi/productsDTO.js');
+const { SelectProduct, InsertProduct, UpdateProduct } = require('../libs/joi/productsDTO.js');
 const { ProductsService } = require('../services/Products.js');
+const { accesHandler } = require('../Middlewares/access.handler.js');
 const { permissionHandler } = require('../Middlewares/permission.handler.js');
 
 const productsService = new ProductsService();
+
+router.get('/',
+    tokenValidatorHandler,
+    accesHandler(1),
+    validatorHandler(SelectProduct, 'query'),
+    async (req, res) => {
+        const productsSelected = await productsService.Select(req);
+        res.status(productsSelected.status).json(productsSelected);
+    }
+);
 
 router.post('/Insert',
     tokenValidatorHandler,

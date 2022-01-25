@@ -1,5 +1,7 @@
 const Joi = require('joi');
 
+const offset = Joi.number().min(0);
+
 const status = Joi.number().min(1).max(2);
 const type = Joi.number().min(1).max(2);
 const code = Joi.string().max(20);
@@ -8,6 +10,12 @@ const description = Joi.string().max(50);
 const branch_office_id = Joi.number().min(0);
 const cost = Joi.number().min(0);
 const price = Joi.number();
+
+const SelectProduct = Joi.object({
+    offset: offset.required(),
+    code: code.allow(null, ''),
+    description: description.allow(null, ''),
+});
 
 const InsertProduct = Joi.object({
     type: type.required(),
@@ -29,4 +37,4 @@ const UpdateProduct = Joi.object({
     price: price.required().when('cost', { is: Joi.exist(), then: Joi.number().greater(Joi.ref('cost')) })
 });
 
-module.exports = { InsertProduct, UpdateProduct };
+module.exports = { SelectProduct, InsertProduct, UpdateProduct };

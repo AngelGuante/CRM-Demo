@@ -1,8 +1,40 @@
 const { models } = require('../libs/sequelize.js');
 const sequelize = require('../libs/sequelize.js');
+const { Op } = require("sequelize");
 const { GetUserSigned, MoneyToNumber } = require('../Utils/staticsMethods.js');
+const { SelectsTotalRegists } = require('../Utils/staticsVariables.js');
 
 class ProductsService {
+    async Select(req) {
+        const data = req.query;
+        const productsFilter = await models.product.findAll({
+            offset: data['offset'] * SelectsTotalRegists,
+            limit: SelectsTotalRegists,
+            attributes: [['product_status_id', 'status'], ['product_type_id', 'type'], 'code', 'description'],
+            where: {
+                code: {
+                    [Op.like]: `%${data['code']}%`
+                },
+                description: {
+                    [Op.like]: `%${data['description']}%`
+                }
+            }
+        });
+
+        if (productsFilter.length)
+            return {
+                "status": 200,
+                "title": "Success",
+                "message": productsFilter
+            };
+
+        return {
+            "status": 204,
+            "title": "No Content",
+            "message": "No product found"
+        };
+    }
+
     async Insert(req) {
         try {
             const data = req.body;
@@ -141,7 +173,7 @@ class ProductsService {
                 return {
                     "status": 204,
                     "title": "No Content",
-                    "message": `Product not found`
+                    "message": "Product not found"
                 }
             }
 
