@@ -1,8 +1,7 @@
 // Validate if the user has access to resouce/ page
 // ************************************************
 
-const { getTokenPayload } = require('../libs/jwt.js');
-const { SignedInUsers } = require('../Utils/staticsVariables.js');
+const { GetUserSigned } = require('../Utils/staticsMethods.js');
 
 const accesHandler = (accessId) => {
     let accessName = '';
@@ -11,8 +10,7 @@ const accesHandler = (accessId) => {
         accessName = 'products'
 
     return (req, res, next) => {
-        const requestUserId = (getTokenPayload(req.headers['authorization']))['sub'];
-        const access = (SignedInUsers.find(x => x['id'] === requestUserId))['access'];
+        const access = (GetUserSigned(req))['access'];
 
         if (access.split(',').find(x => x === String(accessId)))
             next();

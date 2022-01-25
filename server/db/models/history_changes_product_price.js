@@ -29,7 +29,8 @@ module.exports = function(sequelize, DataTypes) {
     },
     createat: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true,
+      defaultValue: Sequelize.Sequelize.fn('now')
     }
   }, {
     sequelize,

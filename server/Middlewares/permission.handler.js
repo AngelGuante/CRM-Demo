@@ -1,8 +1,7 @@
 // Validate if the user has a permission
 // *************************************
 
-const { getTokenPayload } = require('../libs/jwt.js');
-const { SignedInUsers } = require('../Utils/staticsVariables.js');
+const { GetUserSigned } = require('../Utils/staticsMethods.js');
 
 const permissionHandler = (permissionId) => {
     let permissionName = '';
@@ -11,8 +10,7 @@ const permissionHandler = (permissionId) => {
         permissionName = 'insert producto'
 
     return (req, res, next) => {
-        const requestUserId = (getTokenPayload(req.headers['authorization']))['sub'];
-        const permissions = (SignedInUsers.find(x => x['id'] === requestUserId))['permissions'];
+        const permissions = (GetUserSigned(req))['permissions'];
 
         if (permissions.split(',').find(x => x === String(permissionId)))
             next();
