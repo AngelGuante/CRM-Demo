@@ -12,6 +12,9 @@ class SellerService {
                 branch_office_id: userSigned['company_id'],
                 code: data.code.toLowerCase(),
                 name: data.name.toLowerCase(),
+
+                contact: data.contact.toLowerCase(),
+                contact_type_id: data.contact_type
             }
 
             if (userSigned) {
@@ -23,13 +26,22 @@ class SellerService {
                                                        AND company_id = ${userSigned['company_id']}`))[0];
                 if (!codeExist) {
                     const seller = await models.seller.create(dataFormated);
+                    
+                    if (seller) {
+                        //Is a contact is specified, we save them
+                        if (dataFormated['contact'] && dataFormated['contact_type_id'])
+                            await models.seller_contact.create({
+                                contact_type_id: dataFormated['contact_type_id'],
+                                seller_id: seller['dataValues']['id'],
+                                contact: dataFormated['contact'],
+                            });
 
-                    if (seller)
                         return {
                             "status": 201,
                             "title": "Created",
                             "message": seller
                         };
+                    }
                     else
                         return {
                             "status": 500,
