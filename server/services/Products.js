@@ -37,6 +37,7 @@ class ProductsService {
 
     async Insert(req) {
         try {
+            const userSigned = GetUserSigned(req);
             const data = req.body;
             const dataFormated = {
                 product_type_id: data.type,
@@ -56,16 +57,16 @@ class ProductsService {
                     "message": "ValidationError: 'cost' and 'price' should have a valid value"
                 };
 
-            const userSigned = GetUserSigned(req);
             if (userSigned) {
                 //Validate id product exist on the all branches offices of one company
-                const [productExist] = await sequelize.query(`SELECT P.code
-                                                              FROM branch_office BO
-                                                              RIGHT JOIN branch_office_product BOP ON BOP.branch_office_id = BO.id
-                                                              RIGHT JOIN product P ON P.id = BOP.product_id
-                                                              WHERE company_id = ${userSigned['company_id']}`);
+                const [productExist] = (await sequelize.query(`SELECT P.code
+                                                               FROM branch_office BO
+                                                               RIGHT JOIN branch_office_product BOP ON BOP.branch_office_id = BO.id
+                                                               RIGHT JOIN product P ON P.id = BOP.product_id
+                                                               WHERE P.code = '${dataFormated['code']}'
+                                                               AND company_id = ${userSigned['company_id']}`))[0];
 
-                if (!productExist.find(x => x['code'] === dataFormated.code)) {
+                if (!productExist) {
                     const product = await models.product.create(dataFormated);
                     if (product) {
                         const productCreated = await models.branch_office_product.create({

@@ -7,15 +7,15 @@ const { ProductsService } = require('../services/Products.js');
 const { accesHandler } = require('../Middlewares/access.handler.js');
 const { permissionHandler } = require('../Middlewares/permission.handler.js');
 
-const productsService = new ProductsService();
+const service = new ProductsService();
 
 router.get('/',
     tokenValidatorHandler,
     accesHandler(1),
     validatorHandler(SelectProduct, 'query'),
     async (req, res) => {
-        const productsSelected = await productsService.Select(req);
-        res.status(productsSelected.status).json(productsSelected);
+        const result = await service.Select(req);
+        res.status(result.status).json(result);
     }
 );
 
@@ -24,18 +24,18 @@ router.post('/Insert',
     permissionHandler(1),
     validatorHandler(InsertProduct, 'body'),
     async (req, res) => {
-        const productCreated = await productsService.Insert(req);
-        res.status(productCreated.status).json(productCreated);
+        const result = await service.Insert(req);
+        res.status(result.status).json(result);
     }
 );
 
 router.post('/Update',
     tokenValidatorHandler,
-    permissionHandler(2),
+    permissionHandler(1),
     validatorHandler(UpdateProduct, 'body'),
     async (req, res) => {
-        const productUpdated = await productsService.Update(req);
-        res.status(productUpdated.status).json(productUpdated);
+        const result = await service.Update(req);
+        res.status(result.status).json(result);
     }
 );
 
