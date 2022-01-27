@@ -7,7 +7,7 @@ const { SelectsTotalRegists } = require('../Utils/staticsVariables.js');
 class ProductsService {
     async Select(req) {
         const data = req.query;
-        const productsFilter = await models.product.findAll({
+        const searchResult = await models.product.findAll({
             offset: data['offset'] * SelectsTotalRegists,
             limit: SelectsTotalRegists,
             attributes: [['product_status_id', 'status'], ['product_type_id', 'type'], 'code', 'description'],
@@ -21,11 +21,11 @@ class ProductsService {
             }
         });
 
-        if (productsFilter.length)
+        if (searchResult.length)
             return {
                 "status": 200,
                 "title": "Success",
-                "message": productsFilter
+                "message": searchResult
             };
 
         return {

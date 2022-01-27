@@ -1,8 +1,40 @@
 const { models } = require('../libs/sequelize.js');
 const sequelize = require('../libs/sequelize.js');
+const { Op } = require("sequelize");
 const { GetUserSigned } = require('../Utils/staticsMethods.js');
+const { SelectsTotalRegists } = require('../Utils/staticsVariables.js');
 
 class SellerService {
+    async Select(req) {
+        const data = req.query;
+        const searchResult = await models.seller.findAll({
+            offset: data['offset'] * SelectsTotalRegists,
+            limit: SelectsTotalRegists,
+            attributes: [['seller_client_status_id', 'status'], 'code', 'name'],
+            where: {
+                code: {
+                    [Op.like]: `%${data['code']}%`
+                },
+                name: {
+                    [Op.like]: `%${data['name']}%`
+                }
+            }
+        });
+
+        if (searchResult.length)
+            return {
+                "status": 200,
+                "title": "Success",
+                "message": searchResult
+            };
+
+        return {
+            "status": 204,
+            "title": "No Content",
+            "message": "No seller found"
+        };
+    }
+    
     async Insert(req) {
         try {
             const userSigned = GetUserSigned(req);
