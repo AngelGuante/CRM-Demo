@@ -45,8 +45,7 @@ class SellerService {
                 code: data.code.toLowerCase(),
                 name: data.name.toLowerCase(),
 
-                contact: data.contact.toLowerCase(),
-                contact_type_id: data.contact_type
+                contacts: data.contacts
             }
 
             if (userSigned) {
@@ -60,13 +59,16 @@ class SellerService {
                     const seller = await models.seller.create(dataFormated);
                     
                     if (seller) {
-                        //Is a contact is specified, we save them
-                        if (dataFormated['contact'] && dataFormated['contact_type_id'])
-                            await models.seller_contact.create({
-                                contact_type_id: dataFormated['contact_type_id'],
-                                seller_id: seller['dataValues']['id'],
-                                contact: dataFormated['contact'],
-                            });
+                        //If a contact is specified, we save them
+                        if(dataFormated['contacts'] && dataFormated['contacts'].length) {
+                            dataFormated['contacts'].forEach(async x => {
+                                await models.seller_contact.create({
+                                    contact_type_id: x['type'],
+                                    seller_id: seller['dataValues']['id'],
+                                    contact: x['contact'],
+                                });
+                            })
+                        }
 
                         return {
                             "status": 201,
