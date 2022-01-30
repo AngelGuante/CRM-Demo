@@ -14,6 +14,10 @@ const contactObjectCustomValidation = (value) => {
     if (value.find(x => (!x.hasOwnProperty('contact')) || (!x.hasOwnProperty('type'))))
         throw new Error(`contact and type must be valids values`);
 
+    //Validate if one contact with type 1 (numer) is not a number
+    if (value.find(x => x['type'] === 1 && !x['contact'].match(/^\d*$/)))
+        throw new Error(`contact type number mus have only numbers`);
+
     return value;
 }
 
@@ -39,4 +43,10 @@ const InsertSeller = Joi.object({
     contacts: contacts
 });
 
-module.exports = { SelectSeller, InsertSeller }
+const UpdateSeller = Joi.object({
+    status: status.required(),
+    code: code.required(),
+    name: name.required(),
+});
+
+module.exports = { SelectSeller, InsertSeller, UpdateSeller }

@@ -4,6 +4,8 @@ const { Op } = require("sequelize");
 const { GetUserSigned } = require('../Utils/staticsMethods.js');
 const { SelectsTotalRegists } = require('../Utils/staticsVariables.js');
 
+const nameEntity = 'Seller';
+
 class SellerService {
     async Select(req) {
         const data = req.query;
@@ -34,7 +36,7 @@ class SellerService {
             "message": "No seller found"
         };
     }
-    
+
     async Insert(req) {
         try {
             const userSigned = GetUserSigned(req);
@@ -57,15 +59,15 @@ class SellerService {
                                                        AND company_id = ${userSigned['company_id']}`))[0];
                 if (!codeExist) {
                     const seller = await models.seller.create(dataFormated);
-                    
+
                     if (seller) {
                         //If a contact is specified, we save them
-                        if(dataFormated['contacts'] && dataFormated['contacts'].length) {
+                        if (dataFormated['contacts'] && dataFormated['contacts'].length) {
                             dataFormated['contacts'].forEach(async x => {
                                 await models.seller_contact.create({
                                     contact_type_id: x['type'],
                                     seller_id: seller['dataValues']['id'],
-                                    contact: x['contact'],
+                                    contact: x['contact'].toLowerCase(),
                                 });
                             })
                         }
@@ -80,7 +82,7 @@ class SellerService {
                         return {
                             "status": 500,
                             "title": "Error",
-                            "message": "Error creating product"
+                            "message": `Error creating ${nameEntity}`
                         };
                 }
                 else
@@ -92,6 +94,56 @@ class SellerService {
             }
         }
         catch (error) {
+            return {
+                "status": 500,
+                "title": "Server Error",
+                "message": `{
+                    "Error": ${error["parent"] || error},
+                }`
+            }
+        }
+    }
+
+    async Update(req) {
+        try {
+            const userSigned = GetUserSigned(req);
+            const data = req.body;
+            const dataFormated = {
+                seller_client_status_id: data.status,
+                code: data.code.toLowerCase(),
+                name: data.name.toLowerCase(),
+
+                contacts: data.contacts
+            };
+
+            //Get seller to update
+            const entitiy = await models.seller.findOne({
+                where: {
+                    branch_office_id: userSigned['company_id'],
+                    code: dataFormated.code
+                }
+            });
+
+            if (entitiy)
+                //Update entitiy
+                await entitiy.update({
+                    seller_client_status_id: dataFormated['seller_client_status_id'],
+                    name: dataFormated['name']
+                });
+            else {
+                return {
+                    "status": 204,
+                    "title": "No Content",
+                    "message": `${nameEntity} not found`
+                }
+            }
+
+            return {
+                "status": 200,
+                "title": "Success",
+                "message": `${nameEntity} update successful`
+            }
+        } catch (error) {
             return {
                 "status": 500,
                 "title": "Server Error",

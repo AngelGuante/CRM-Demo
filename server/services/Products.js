@@ -4,6 +4,8 @@ const { Op } = require("sequelize");
 const { GetUserSigned, MoneyToNumber } = require('../Utils/staticsMethods.js');
 const { SelectsTotalRegists } = require('../Utils/staticsVariables.js');
 
+const nameEntity = 'Product';
+
 class ProductsService {
     async Select(req) {
         const data = req.query;
@@ -31,7 +33,7 @@ class ProductsService {
         return {
             "status": 204,
             "title": "No Content",
-            "message": "No product found"
+            "message": `No ${nameEntity} found`
         };
     }
 
@@ -100,14 +102,14 @@ class ProductsService {
                         return {
                             "status": 500,
                             "title": "Error",
-                            "message": "Error creating product"
+                            "message": `Error creating ${nameEntity}`
                         };
                 }
                 else
                     return {
                         "status": 406,
                         "title": "Not Aceptable",
-                        "message": "Product Exists"
+                        "message": `${nameEntity} Exists`
                     };
             }
         } catch (error) {
@@ -180,14 +182,14 @@ class ProductsService {
                 return {
                     "status": 204,
                     "title": "No Content",
-                    "message": "Product not found"
+                    "message": `${nameEntity} not found`
                 }
             }
 
             return {
                 "status": 200,
                 "title": "Success",
-                "message": `Product update successful`
+                "message": `${nameEntity} update successful`
             }
         } catch (error) {
             return {
