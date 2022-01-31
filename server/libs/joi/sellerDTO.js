@@ -44,6 +44,10 @@ const InsertSeller = Joi.object({
     contacts: contacts
 });
 
+const SelectSellerContact = Joi.object({
+    code: code.required(),
+});
+
 const UpdateSeller = Joi.object({
     status: status.required(),
     code: code.required(),
@@ -62,4 +66,4 @@ const DeleteSellerContact = Joi.object({
     contact: contact.required()
 });
 
-module.exports = { SelectSeller, InsertSeller, UpdateSeller, InsertSellerContact, DeleteSellerContact }
+module.exports = { SelectSeller, InsertSeller, UpdateSeller, SelectSellerContact, InsertSellerContact, DeleteSellerContact }

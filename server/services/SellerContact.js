@@ -6,6 +6,37 @@ const { MaxContactsPerEntity } = require('../Utils/staticsVariables.js');
 const nameEntity = 'Seller Contact';
 
 class SellerService {
+    async Select(req) {
+        const userSigned = GetUserSigned(req);
+        const data = req.query;
+        const searchResult = await models.seller_contact.findAll({
+            attributes: [['contact_type_id', 'type'], 'contact'],
+            include: [
+                {
+                    model: models.seller, as: 'seller',
+                    attributes: [],
+                    where: {
+                        branch_office_id: userSigned['company_id'],
+                        code: data['code']
+                    }
+                }
+            ]
+        });
+
+        if (searchResult.length)
+            return {
+                "status": 200,
+                "title": "Success",
+                "message": searchResult
+            };
+
+        return {
+            "status": 204,
+            "title": "No Content",
+            "message": "No seller found"
+        };
+    }
+
     async Insert(req) {
         try {
             const userSigned = GetUserSigned(req);
