@@ -2,7 +2,7 @@ const { models } = require('../libs/sequelize.js');
 const sequelize = require('../libs/sequelize.js');
 const { Op } = require("sequelize");
 const { GetUserSigned } = require('../Utils/staticsMethods.js');
-const { SelectsTotalRegists } = require('../Utils/staticsVariables.js');
+const { SelectsTotalRegists, MaxContactsPerEntity } = require('../Utils/staticsVariables.js');
 
 const nameEntity = 'Seller';
 
@@ -49,6 +49,14 @@ class SellerService {
 
                 contacts: data.contacts
             }
+
+            //Validate if seller have less or equals the limit of seller contacts
+            if (dataFormated['contacts'] && dataFormated['contacts'].length && Number(dataFormated['contacts'].length) > MaxContactsPerEntity)
+                return {
+                    "status": 406,
+                    "title": "Not Aceptable",
+                    "message": `Seller can't have more than ${MaxContactsPerEntity} contacts`
+                };
 
             if (userSigned) {
                 //Validate if seller exist on the all branches offices of one company
