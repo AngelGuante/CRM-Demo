@@ -117,16 +117,16 @@ class SellerService {
             };
 
             //Get seller to update
-            const entitiy = await models.seller.findOne({
+            const entity = await models.seller.findOne({
                 where: {
                     branch_office_id: userSigned['company_id'],
                     code: dataFormated.code
                 }
             });
 
-            if (entitiy)
-                //Update entitiy
-                await entitiy.update({
+            if (entity)
+                //Update entity
+                await entity.update({
                     seller_client_status_id: dataFormated['seller_client_status_id'],
                     name: dataFormated['name']
                 });

@@ -16,7 +16,7 @@ const contactObjectCustomValidation = (value) => {
 
     //Validate if one contact with type 1 (numer) is not a number
     if (value.find(x => x['type'] === 1 && !x['contact'].match(/^\d*$/)))
-        throw new Error(`contact type number mus have only numbers`);
+        throw new Error(`contact type number must have only numbers`);
 
     return value;
 }
@@ -28,6 +28,7 @@ const code = Joi.string().max(20);
 const name = Joi.string().max(80);
 
 const contacts = Joi.array().custom(contactObjectCustomValidation);
+const contact = Joi.number().min(1).max(9999999999);
 
 const SelectSeller = Joi.object({
     offset: offset.required(),
@@ -49,4 +50,16 @@ const UpdateSeller = Joi.object({
     name: name.required(),
 });
 
-module.exports = { SelectSeller, InsertSeller, UpdateSeller }
+const InsertSellerContact = Joi.object({
+    code: code.required(),
+
+    contacts: contacts.required()
+});
+
+const DeleteSellerContact = Joi.object({
+    code: code.required(),
+
+    contact: contact.required()
+});
+
+module.exports = { SelectSeller, InsertSeller, UpdateSeller, InsertSellerContact, DeleteSellerContact }
