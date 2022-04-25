@@ -1,10 +1,11 @@
 const Joi = require('joi');
+const { ProductCodeMaxLength } = require('../../Utils/staticsVariables.js');
 
 const offset = Joi.number().min(0);
 
 const status = Joi.number().min(1).max(2);
 const type = Joi.number().min(1).max(2);
-const code = Joi.string().max(20);
+const code = Joi.string().max(ProductCodeMaxLength);
 const description = Joi.string().max(50);
 
 const branch_office_id = Joi.number().min(0);
@@ -32,7 +33,6 @@ const UpdateProduct = Joi.object({
     code: code.required(),
     description: description.required(),
 
-    branch_office_id: branch_office_id.required(),
     cost: cost.required(),
     price: price.required().when('cost', { is: Joi.exist(), then: Joi.number().greater(Joi.ref('cost')) })
 });

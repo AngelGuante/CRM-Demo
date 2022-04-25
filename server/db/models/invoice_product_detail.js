@@ -25,23 +25,23 @@ module.exports = function(sequelize, DataTypes) {
     },
     amount: {
       type: DataTypes.DECIMAL(19,4),
-      allowNull: true
+      allowNull: false
     },
     quantity: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     quantitybeforeinvoice: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     costoninvoice: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     priceoninvoice: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     }
   }, {
     sequelize,

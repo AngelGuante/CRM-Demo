@@ -31,6 +31,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: Sequelize.Sequelize.fn('now')
+    },
+    branch_office_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'branch_office',
+        key: 'id'
+      }
     }
   }, {
     sequelize,

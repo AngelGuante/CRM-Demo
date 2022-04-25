@@ -10,16 +10,9 @@ module.exports = function(sequelize, DataTypes) {
     seller_client_status_id: {
       type: DataTypes.SMALLINT,
       allowNull: false,
+      defaultValue: 1,
       references: {
         model: 'seller_client_status',
-        key: 'id'
-      }
-    },
-    branch_office_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'branch_office',
         key: 'id'
       }
     },

@@ -8,19 +8,32 @@ const nameEntity = 'Product';
 
 class ProductsService {
     async Select(req) {
+        const userSigned = GetUserSigned(req);
         const data = req.query;
-        const searchResult = await models.product.findAll({
+
+        const searchResult = await models.branch_office_product.findAll({
             offset: data['offset'] * SelectsTotalRegists,
             limit: SelectsTotalRegists,
-            attributes: [['product_status_id', 'status'], ['product_type_id', 'type'], 'code', 'description'],
+            attributes: [],
             where: {
-                code: {
-                    [Op.like]: `%${data['code']}%`
-                },
-                description: {
-                    [Op.like]: `%${data['description']}%`
+                branch_office_id: userSigned['branch_office']
+            },
+            include: [
+                {
+                    model: models.product, as: 'product',
+                    attributes: [['product_status_id', 'status'], ['product_type_id', 'type'], 'code', 'description'],
+                    where: {
+                        code:
+                        {
+                            [Op.like]: `%${data['code']}%`
+                        },
+                        description:
+                        {
+                            [Op.like]: `%${data['description']}%`
+                        }
+                    }
                 }
-            }
+            ]
         });
 
         if (searchResult.length)
@@ -79,18 +92,15 @@ class ProductsService {
                             quantity: 0
                         });
 
-                        //Save history of change of product price
-                        await models.history_changes_product_price.create({
-                            product_id: productCreated.id,
-                            newprice: productCreated.price,
-                            createdby_user_id: userSigned['id']
-                        });
-                        //Save history of change of product cost
-                        await models.history_changes_product_cost.create({
-                            product_id: productCreated.id,
-                            newcost: productCreated.cost,
-                            createdby_user_id: userSigned['id']
-                        });
+                        await this.SaveProductHistory(
+                            userSigned,
+                            {
+                                id: productCreated['dataValues']['product_id'],
+                                price: 0,
+                                cost: 0
+                            },
+                            'all',
+                            'Created');
 
                         return {
                             "status": 201,
@@ -124,6 +134,7 @@ class ProductsService {
     }
 
     async Update(req) {
+        const userSigned = GetUserSigned(req);
         try {
             const data = req.body;
             const dataFormated = {
@@ -137,7 +148,7 @@ class ProductsService {
 
             //Get branch_office_product and product to update
             const tables = await models.branch_office_product.findOne({
-                where: { branch_office_id: dataFormated.product_type_id },
+                where: { branch_office_id: userSigned['branch_office'] },
                 include: [
                     {
                         model: models.product, as: 'product',
@@ -146,44 +157,44 @@ class ProductsService {
                 ]
             });
 
-            //Save a backup of resultset because we need to use it after update and need work with old data.
-            const tablesBK = { price: tables.price };
-
-            if (tables && tables['product']) {
-                //Cost can't be greater than price
-                if (MoneyToNumber(tables.cost) > dataFormated.price)
-                    return {
-                        "status": 400,
-                        "title": "Bad Request",
-                        "message": "ValidationError: 'price' should be greater than 'cost'"
-                    }
-
-                //Update entities
-                await tables['product'].update({
-                    product_status_id: dataFormated.product_status_id,
-                    product_type_id: dataFormated.product_type_id,
-                    description: dataFormated.description,
-                });
-                await tables.update({
-                    price: dataFormated.price
-                });
-
-                //Save history of change of product price if it was updated
-                if (MoneyToNumber(tablesBK.price) != dataFormated.price) {
-                    const userSigned = GetUserSigned(req);
-                    await models.history_changes_product_price.create({
-                        product_id: tables['product'].id,
-                        newprice: dataFormated.price,
-                        createdby_user_id: userSigned['id']
-                    });
-                }
-            }
-            else {
+            if (!tables || !tables['product'])
                 return {
                     "status": 204,
                     "title": "No Content",
                     "message": `${nameEntity} not found`
                 }
+
+            //Save a backup of resultset because we need to use it after update and need work with old data.
+            const tablesBK = { price: tables.price };
+
+            //Cost can't be greater than price
+            if (MoneyToNumber(tables.cost) > dataFormated.price)
+                return {
+                    "status": 400,
+                    "title": "Bad Request",
+                    "message": "ValidationError: 'price' should be greater than 'cost'"
+                }
+
+            //Update entities
+            await tables['product'].update({
+                product_status_id: dataFormated.product_status_id,
+                product_type_id: dataFormated.product_type_id,
+                description: dataFormated.description,
+            });
+            await tables.update({
+                price: dataFormated.price
+            });
+
+            //Save history of change of product price if it was updated
+            if (MoneyToNumber(tablesBK.price) != dataFormated.price) {
+                await this.SaveProductHistory(
+                    userSigned,
+                    {
+                        id: tables['product'].id,
+                        price: dataFormated.price,
+                        createdby_user_id: userSigned['id']
+                    },
+                    'price');
             }
 
             return {
@@ -200,6 +211,27 @@ class ProductsService {
                 }`
             }
         }
+    }
+
+    async SaveProductHistory(userSigned, product, priceOrCost, noterefernce) {
+        //Save history of change of product price
+        if (priceOrCost === 'all' || priceOrCost === 'price')
+            await models.history_changes_product_price.create({
+                product_id: product['id'],
+                newprice: product['price'],
+                createdby_user_id: userSigned['id'],
+                branch_office_id: userSigned['branch_office']
+            });
+
+        //Save history of change of product cost
+        if (priceOrCost === 'all' || priceOrCost === 'cost')
+            await models.history_changes_product_cost.create({
+                product_id: product['id'],
+                newcost: product['cost'],
+                createdby_user_id: userSigned['id'],
+                branch_office_id: userSigned['branch_office'],
+                noterefernce: noterefernce
+            });
     }
 }
 

@@ -42,7 +42,6 @@ class SellerService {
             const userSigned = GetUserSigned(req);
             const data = req.body;
             const dataFormated = {
-                seller_client_status_id: data.status,
                 branch_office_id: userSigned['company_id'],
                 code: data.code.toLowerCase(),
                 name: data.name.toLowerCase(),
@@ -61,14 +60,27 @@ class SellerService {
             if (userSigned) {
                 //Validate if seller exist on the all branches offices of one company
                 const [codeExist] = (await sequelize.query(`SELECT S.code
-                                                       FROM branch_office BO
-                                                       RIGHT JOIN seller S ON S.branch_office_id = BO.id
-                                                       WHERE S.code = '${dataFormated['code']}'
-                                                       AND company_id = ${userSigned['company_id']}`))[0];
+                                                            FROM 
+                                                            branch_office BO 
+                                                            JOIN seller_branch_office SBO ON SBO.branch_office_id = BO.id
+                                                            JOIN seller S ON S.id = SBO.seller_id
+                                                            WHERE S.code = '${dataFormated['code']}'
+                                                            AND company_id = ${userSigned['company_id']}`))[0];
+
                 if (!codeExist) {
-                    const seller = await models.seller.create(dataFormated);
+                    const seller = await models.seller.create({
+                        code: dataFormated['code'],
+                        name: dataFormated['name'],
+        
+                        contacts: dataFormated['contacts']
+                    });
 
                     if (seller) {
+                        await models.seller_branch_office.create({
+                            seller_id: seller['id'],
+                            branch_office_id: dataFormated['branch_office_id']
+                        });
+
                         //If a contact is specified, we save them
                         if (dataFormated['contacts'] && dataFormated['contacts'].length) {
                             dataFormated['contacts'].forEach(async x => {
@@ -125,16 +137,23 @@ class SellerService {
             };
 
             //Get seller to update
-            const entity = await models.seller.findOne({
+            const entity = await models.seller_branch_office.findOne({
                 where: {
-                    branch_office_id: userSigned['company_id'],
-                    code: dataFormated.code
-                }
+                    branch_office_id: userSigned['company_id']
+                },
+                include: [
+                    {
+                        model: models.seller, as: 'seller',
+                        where: {
+                            code: dataFormated.code
+                        }
+                    }
+                ]
             });
 
             if (entity)
                 //Update entity
-                await entity.update({
+                await entity.seller.update({
                     seller_client_status_id: dataFormated['seller_client_status_id'],
                     name: dataFormated['name']
                 });

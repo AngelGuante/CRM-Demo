@@ -22,6 +22,8 @@ var _employee_status = require("./employee_status");
 var _history_changes_product_cost = require("./history_changes_product_cost");
 var _history_changes_product_price = require("./history_changes_product_price");
 var _invoice = require("./invoice");
+var _invoice_buy = require("./invoice_buy");
+var _invoice_buy_product_detail = require("./invoice_buy_product_detail");
 var _invoice_product_detail = require("./invoice_product_detail");
 var _invoice_status = require("./invoice_status");
 var _invoice_type = require("./invoice_type");
@@ -39,6 +41,7 @@ var _recurrent_transaction_transaction = require("./recurrent_transaction_transa
 var _role = require("./role");
 var _role_permission_access = require("./role_permission_access");
 var _seller = require("./seller");
+var _seller_branch_office = require("./seller_branch_office");
 var _seller_client_status = require("./seller_client_status");
 var _seller_contact = require("./seller_contact");
 var _subcriptionplan = require("./subcriptionplan");
@@ -70,6 +73,8 @@ function initModels(sequelize) {
   var history_changes_product_cost = _history_changes_product_cost(sequelize, DataTypes);
   var history_changes_product_price = _history_changes_product_price(sequelize, DataTypes);
   var invoice = _invoice(sequelize, DataTypes);
+  var invoice_buy = _invoice_buy(sequelize, DataTypes);
+  var invoice_buy_product_detail = _invoice_buy_product_detail(sequelize, DataTypes);
   var invoice_product_detail = _invoice_product_detail(sequelize, DataTypes);
   var invoice_status = _invoice_status(sequelize, DataTypes);
   var invoice_type = _invoice_type(sequelize, DataTypes);
@@ -87,6 +92,7 @@ function initModels(sequelize) {
   var role = _role(sequelize, DataTypes);
   var role_permission_access = _role_permission_access(sequelize, DataTypes);
   var seller = _seller(sequelize, DataTypes);
+  var seller_branch_office = _seller_branch_office(sequelize, DataTypes);
   var seller_client_status = _seller_client_status(sequelize, DataTypes);
   var seller_contact = _seller_contact(sequelize, DataTypes);
   var subcriptionplan = _subcriptionplan(sequelize, DataTypes);
@@ -112,8 +118,14 @@ function initModels(sequelize) {
   branch_office.hasMany(customer, { as: "customers", foreignKey: "branch_office_id"});
   employee.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
   branch_office.hasMany(employee, { as: "employees", foreignKey: "branch_office_id"});
+  history_changes_product_cost.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
+  branch_office.hasMany(history_changes_product_cost, { as: "history_changes_product_costs", foreignKey: "branch_office_id"});
+  history_changes_product_price.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
+  branch_office.hasMany(history_changes_product_price, { as: "history_changes_product_prices", foreignKey: "branch_office_id"});
   invoice.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
   branch_office.hasMany(invoice, { as: "invoices", foreignKey: "branch_office_id"});
+  invoice_buy.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
+  branch_office.hasMany(invoice_buy, { as: "invoice_buys", foreignKey: "branch_office_id"});
   job.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
   branch_office.hasMany(job, { as: "jobs", foreignKey: "branch_office_id"});
   permission.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
@@ -128,8 +140,8 @@ function initModels(sequelize) {
   branch_office.hasMany(role, { as: "roles", foreignKey: "branch_office_id"});
   role_permission_access.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
   branch_office.hasMany(role_permission_access, { as: "role_permission_accesses", foreignKey: "branch_office_id"});
-  seller.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
-  branch_office.hasMany(seller, { as: "sellers", foreignKey: "branch_office_id"});
+  seller_branch_office.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
+  branch_office.hasMany(seller_branch_office, { as: "seller_branch_offices", foreignKey: "branch_office_id"});
   transaction.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
   branch_office.hasMany(transaction, { as: "transactions", foreignKey: "branch_office_id"});
   transaction_type.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
@@ -170,10 +182,16 @@ function initModels(sequelize) {
   invoice.hasMany(invoice_product_detail, { as: "invoice_product_details", foreignKey: "invoice_id"});
   real_state_invoice.belongsTo(invoice, { as: "invoice", foreignKey: "invoice_id"});
   invoice.hasMany(real_state_invoice, { as: "real_state_invoices", foreignKey: "invoice_id"});
+  invoice_buy_product_detail.belongsTo(invoice_buy, { as: "invoice_buy", foreignKey: "invoice_buy_id"});
+  invoice_buy.hasMany(invoice_buy_product_detail, { as: "invoice_buy_product_details", foreignKey: "invoice_buy_id"});
   invoice.belongsTo(invoice_status, { as: "invoice_status", foreignKey: "invoice_status_id"});
   invoice_status.hasMany(invoice, { as: "invoices", foreignKey: "invoice_status_id"});
+  invoice_buy.belongsTo(invoice_status, { as: "invoice_status", foreignKey: "invoice_status_id"});
+  invoice_status.hasMany(invoice_buy, { as: "invoice_buys", foreignKey: "invoice_status_id"});
   invoice.belongsTo(invoice_type, { as: "invoice_type", foreignKey: "invoice_type_id"});
   invoice_type.hasMany(invoice, { as: "invoices", foreignKey: "invoice_type_id"});
+  invoice_buy.belongsTo(invoice_type, { as: "invoice_type", foreignKey: "invoice_type_id"});
+  invoice_type.hasMany(invoice_buy, { as: "invoice_buys", foreignKey: "invoice_type_id"});
   employee.belongsTo(job, { as: "job", foreignKey: "job_id"});
   job.hasMany(employee, { as: "employees", foreignKey: "job_id"});
   role.belongsTo(job, { as: "job", foreignKey: "job_id"});
@@ -186,6 +204,8 @@ function initModels(sequelize) {
   product.hasMany(history_changes_product_cost, { as: "history_changes_product_costs", foreignKey: "product_id"});
   history_changes_product_price.belongsTo(product, { as: "product", foreignKey: "product_id"});
   product.hasMany(history_changes_product_price, { as: "history_changes_product_prices", foreignKey: "product_id"});
+  invoice_buy_product_detail.belongsTo(product, { as: "product", foreignKey: "product_id"});
+  product.hasMany(invoice_buy_product_detail, { as: "invoice_buy_product_details", foreignKey: "product_id"});
   invoice_product_detail.belongsTo(product, { as: "product", foreignKey: "product_id"});
   product.hasMany(invoice_product_detail, { as: "invoice_product_details", foreignKey: "product_id"});
   real_state_invoice_product.belongsTo(product, { as: "product", foreignKey: "product_id"});
@@ -200,8 +220,10 @@ function initModels(sequelize) {
   recurrent_transaction.hasMany(recurrent_transaction_transaction, { as: "recurrent_transaction_transactions", foreignKey: "recurrent_transaction_id"});
   role_permission_access.belongsTo(role, { as: "role", foreignKey: "role_id"});
   role.hasMany(role_permission_access, { as: "role_permission_accesses", foreignKey: "role_id"});
-  seller_contact.belongsTo(seller, { as: "seller", foreignKey: "seller_id"});
-  seller.hasMany(seller_contact, { as: "seller_contacts", foreignKey: "seller_id"});
+  invoice_buy.belongsTo(seller, { as: "createdfor_seller", foreignKey: "createdfor_seller_id"});
+  seller.hasMany(invoice_buy, { as: "invoice_buys", foreignKey: "createdfor_seller_id"});
+  seller_branch_office.belongsTo(seller, { as: "seller", foreignKey: "seller_id"});
+  seller.hasMany(seller_branch_office, { as: "seller_branch_offices", foreignKey: "seller_id"});
   customer.belongsTo(seller_client_status, { as: "seller_client_status", foreignKey: "seller_client_status_id"});
   seller_client_status.hasMany(customer, { as: "customers", foreignKey: "seller_client_status_id"});
   seller.belongsTo(seller_client_status, { as: "seller_client_status", foreignKey: "seller_client_status_id"});
@@ -224,6 +246,8 @@ function initModels(sequelize) {
   user.hasMany(history_changes_product_price, { as: "history_changes_product_prices", foreignKey: "createdby_user_id"});
   invoice.belongsTo(user, { as: "createdby_user", foreignKey: "createdby_user_id"});
   user.hasMany(invoice, { as: "invoices", foreignKey: "createdby_user_id"});
+  invoice_buy.belongsTo(user, { as: "createdby_user", foreignKey: "createdby_user_id"});
+  user.hasMany(invoice_buy, { as: "invoice_buys", foreignKey: "createdby_user_id"});
   period_transaction.belongsTo(user, { as: "closedby_user", foreignKey: "closedby_user_id"});
   user.hasMany(period_transaction, { as: "period_transactions", foreignKey: "closedby_user_id"});
   real_state_invoice.belongsTo(user, { as: "createdby_user", foreignKey: "createdby_user_id"});
@@ -257,6 +281,8 @@ function initModels(sequelize) {
     history_changes_product_cost,
     history_changes_product_price,
     invoice,
+    invoice_buy,
+    invoice_buy_product_detail,
     invoice_product_detail,
     invoice_status,
     invoice_type,
@@ -274,6 +300,7 @@ function initModels(sequelize) {
     role,
     role_permission_access,
     seller,
+    seller_branch_office,
     seller_client_status,
     seller_contact,
     subcriptionplan,

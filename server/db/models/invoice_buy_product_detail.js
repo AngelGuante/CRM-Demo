@@ -1,11 +1,19 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('history_changes_product_cost', {
+  return sequelize.define('invoice_buy_product_detail', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
+    },
+    invoice_buy_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'invoice_buy',
+        key: 'id'
+      }
     },
     product_id: {
       type: DataTypes.INTEGER,
@@ -15,43 +23,30 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    createdby_user_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'user',
-        key: 'id'
-      }
-    },
-    newcost: {
+    amount: {
       type: DataTypes.DECIMAL(19,4),
       allowNull: false
     },
-    createat: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: Sequelize.Sequelize.fn('now')
-    },
-    branch_office_id: {
+    quantity: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'branch_office',
-        key: 'id'
-      }
+      allowNull: false
     },
-    noterefernce: {
-      type: DataTypes.STRING(100),
+    quantitybeforeinvoice: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    costoninvoice: {
+      type: DataTypes.DECIMAL(19,4),
       allowNull: false
     }
   }, {
     sequelize,
-    tableName: 'history_changes_product_cost',
+    tableName: 'invoice_buy_product_detail',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "pk_history_changes_product_cost",
+        name: "pk_invoice_buy_product_detail",
         unique: true,
         fields: [
           { name: "id" },

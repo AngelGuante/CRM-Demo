@@ -6,7 +6,7 @@ const { SignedInUsers } = require('../Utils/staticsVariables.js');
 class LoginService {
     async SignIn(req) {
         const data = req.body;
-        const [user] = (await sequelize.query(`SELECT U.id, ES.name, C.companynumber, U.password, BO.id branch_office_id, R.id rol_id,
+        const [user] = (await sequelize.query(`SELECT U.id, ES.name, C.companynumber, C.id Cid, U.password, BO.id branch_office_id, R.id rol_id,
                                                     (SELECT string_agg(permission_id::text, ',')  permissions
                                                     FROM Role_Permission_Access 
                                                     WHERE role_id = R.id
@@ -25,12 +25,11 @@ class LoginService {
 												    JOIN Job J ON J.id = E.job_id
 												    JOIN role R ON R.job_id = J.id
                                                     WHERE U.name = '${data.user.toLowerCase()}'
+                                                    AND C.companynumber = '${data.companyNumber}'
                                                     `))[0];
 
         if (user) {
-            if (user['id'] !== 1)
-                return `{"status": 401, "title": "${user['Name']}", "message": "${user[description]}"}`;
-            else if (await CompareHashPassword(data.pass, user['password']) && data.companyNumber === user['companynumber']) {
+            if (await CompareHashPassword(data.pass, user['password']) && data.companyNumber === user['companynumber']) {
                 //Validate if de user are already Signed In.
                 const itemExistsIndex = SignedInUsers.findIndex(x => x['id'] == user['id']);
 
@@ -44,14 +43,13 @@ class LoginService {
                 };
 
                 const token = signToken(payload);
-
                 //Save user Signed
                 SignedInUsers.push({
                     "id": user['id'],
                     "ip": req.headers['x-forwarded-for'] || req.socket.remoteAddress,
                     "token": `Bearer ${token}`,
                     "branch_office": user['branch_office_id'],
-                    "company_id": user['id'],
+                    "company_id": user['cid'],
                     "rol_id": user['rol_id'],
                     "companyNumber": user['companynumber'],
                     "permissions": user['permissions'],
