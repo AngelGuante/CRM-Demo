@@ -24,7 +24,7 @@ const contactObjectCustomValidation = (value) => {
 }
 
 const amount = Joi.number();
-const status = Joi.number().min(1).max(1);
+const status = Joi.number().min(1).max(2);
 const code = Joi.string().max(UserCodeMaxLength);
 const products = Joi.array().custom(contactObjectCustomValidation);
 

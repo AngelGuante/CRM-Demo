@@ -133,7 +133,7 @@ class SellerService {
             //Save invoice Buy
             const invoicebuyCreated = await models.invoice_buy.create({
                 invoice_type_id: 1,
-                invoice_status_id: 1,
+                invoice_status_id: dataFormated.status,
                 createdby_user_id: userSigned['id'],
                 createdfor_seller_id: seller[0]['seller']['dataValues']['id'],
                 branch_office_id: userSigned['branch_office'],
@@ -167,6 +167,10 @@ class SellerService {
                 };
 
                 if (product['dataValues']['cost'] !== x['amount']) {
+                    // -------
+                    // -TO DO-
+                    // -------
+                    // *. Averiguar la formular para cuando el se quiera cambiar codigo del producto de manera automatica.
                     productData.cost = x['amount'];
                     await service.SaveProductHistory(userSigned, { 'id': product['product']['dataValues']['id'], 'cost': x['amount'] }, 'cost', `buy-change-${invoicebuyCreated['id']}`);
                 }
