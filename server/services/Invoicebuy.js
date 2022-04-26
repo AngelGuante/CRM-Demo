@@ -2,8 +2,10 @@ const { models } = require('../libs/sequelize.js');
 const { Op } = require("sequelize");
 const { GetUserSigned } = require('../Utils/staticsMethods.js');
 const { ProductsService } = require('../services/Products.js');
+const { AmountOnAccountService } = require('../services/AmountOnAccount.js')
 
 const service = new ProductsService();
+const amountOnAccountService = new AmountOnAccountService();
 
 class SellerService {
     async Insert(req) {
@@ -11,6 +13,8 @@ class SellerService {
             const userSigned = GetUserSigned(req);
             const dataFormated = {
                 code: req.body['code'].toLowerCase(),
+                status: req.body['status'],
+                amount: req.body['amount'],
 
                 products: req.body['products']
             }
@@ -169,6 +173,11 @@ class SellerService {
 
                 await branch_office_product.update(productData);
             });
+
+            // If status of invoice is paid
+            if (dataFormated.status === 1)
+                // Save Petty Cash total of invoice
+                await amountOnAccountService.Insert({ 'branch_office_id': userSigned['branch_office'], 'amount': dataFormated.amount });
 
             return {
                 "status": 201,

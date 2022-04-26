@@ -8,7 +8,7 @@ const type = Joi.number().min(1).max(2);
 const code = Joi.string().max(ProductCodeMaxLength);
 const description = Joi.string().max(50);
 
-const branch_office_id = Joi.number().min(0);
+// const branch_office_id = Joi.number().min(0);
 const cost = Joi.number().min(0);
 const price = Joi.number();
 

@@ -4,6 +4,7 @@ var _account_type = require("./account_type");
 var _active_credit_invoice_costs = require("./active_credit_invoice_costs");
 var _amount_on_account = require("./amount_on_account");
 var _branch_office = require("./branch_office");
+var _branch_office_amount_on_account = require("./branch_office_amount_on_account");
 var _branch_office_contact = require("./branch_office_contact");
 var _branch_office_product = require("./branch_office_product");
 var _company = require("./company");
@@ -55,6 +56,7 @@ function initModels(sequelize) {
   var active_credit_invoice_costs = _active_credit_invoice_costs(sequelize, DataTypes);
   var amount_on_account = _amount_on_account(sequelize, DataTypes);
   var branch_office = _branch_office(sequelize, DataTypes);
+  var branch_office_amount_on_account = _branch_office_amount_on_account(sequelize, DataTypes);
   var branch_office_contact = _branch_office_contact(sequelize, DataTypes);
   var branch_office_product = _branch_office_product(sequelize, DataTypes);
   var company = _company(sequelize, DataTypes);
@@ -104,12 +106,16 @@ function initModels(sequelize) {
   access.hasMany(role_permission_access, { as: "role_permission_accesses", foreignKey: "access_id"});
   amount_on_account.belongsTo(account_type, { as: "account_type", foreignKey: "account_type_id"});
   account_type.hasMany(amount_on_account, { as: "amount_on_accounts", foreignKey: "account_type_id"});
+  branch_office_amount_on_account.belongsTo(amount_on_account, { as: "amount_on_account", foreignKey: "amount_on_account_id"});
+  amount_on_account.hasMany(branch_office_amount_on_account, { as: "branch_office_amount_on_accounts", foreignKey: "amount_on_account_id"});
   period_transaction.belongsTo(amount_on_account, { as: "amount_on_account", foreignKey: "amount_on_account_id"});
   amount_on_account.hasMany(period_transaction, { as: "period_transactions", foreignKey: "amount_on_account_id"});
   account_type.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
   branch_office.hasMany(account_type, { as: "account_types", foreignKey: "branch_office_id"});
   active_credit_invoice_costs.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
   branch_office.hasMany(active_credit_invoice_costs, { as: "active_credit_invoice_costs", foreignKey: "branch_office_id"});
+  branch_office_amount_on_account.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
+  branch_office.hasMany(branch_office_amount_on_account, { as: "branch_office_amount_on_accounts", foreignKey: "branch_office_id"});
   branch_office_contact.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
   branch_office.hasMany(branch_office_contact, { as: "branch_office_contacts", foreignKey: "branch_office_id"});
   branch_office_product.belongsTo(branch_office, { as: "branch_office", foreignKey: "branch_office_id"});
@@ -263,6 +269,7 @@ function initModels(sequelize) {
     active_credit_invoice_costs,
     amount_on_account,
     branch_office,
+    branch_office_amount_on_account,
     branch_office_contact,
     branch_office_product,
     company,

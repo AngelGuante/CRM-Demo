@@ -23,12 +23,16 @@ const contactObjectCustomValidation = (value) => {
     return value;
 }
 
+const amount = Joi.number();
+const status = Joi.number().min(1).max(1);
 const code = Joi.string().max(UserCodeMaxLength);
 const products = Joi.array().custom(contactObjectCustomValidation);
 
 const InsertInvoiceBuy = Joi.object({
     code: code.required(),
-    products: products.required()
+    products: products.required(),
+    status: status.required(),
+    amount: amount.required()
 });
 
 module.exports = { InsertInvoiceBuy };
