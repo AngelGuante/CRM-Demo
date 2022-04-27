@@ -7,6 +7,14 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
+    branch_office_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'branch_office',
+        key: 'id'
+      }
+    },
     amount_on_account_id: {
       type: DataTypes.INTEGER,
       allowNull: false,

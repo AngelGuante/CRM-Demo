@@ -2,7 +2,7 @@ const { models } = require('../libs/sequelize.js');
 const { Op } = require("sequelize");
 const { GetUserSigned } = require('../Utils/staticsMethods.js');
 const { ProductsService } = require('../services/Products.js');
-const { AmountOnAccountService } = require('../services/AmountOnAccount.js')
+const { AmountOnAccountService } = require('../services/AmountOnAccount.js');
 
 const service = new ProductsService();
 const amountOnAccountService = new AmountOnAccountService();
@@ -111,7 +111,7 @@ class SellerService {
                         quantity: 0
                     });
 
-                    await service.SaveProductHistory(userSigned, { 'id': productData['dataValues']['product']['id'], 'cost': 0 }, 'cost', 'first buy');
+                    await service.SaveProductHistory(userSigned, { 'id': productData['dataValues']['product']['id'], 'cost': 0 }, 'cost', 'first-buy');
                 }
             });
 
