@@ -1,9 +1,8 @@
 const { getTokenPayload } = require('../libs/jwt.js');
 const { SignedInUsers } = require('../Utils/staticsVariables.js');
 
-const MoneyToNumber = money => {
-    return Number(money.replace(/[^0-9.-]+/g,""));
-}
+const MoneyToNumber = money =>
+    Number(money.replace(/[^0-9.-]+/g,""));
 
 const GetUserSigned = req => {
     const payload = getTokenPayload(req.headers['authorization']);

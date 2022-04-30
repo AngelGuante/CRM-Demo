@@ -8,6 +8,10 @@ const accesHandler = (accessId) => {
 
     if (accessId == 1)
         accessName = 'products'
+    else if (accessId == 2)
+        accessName = 'buys'
+    else if (accessId == 3)
+        accessName = 'sells'
 
     return (req, res, next) => {
         const access = (GetUserSigned(req))['access'];

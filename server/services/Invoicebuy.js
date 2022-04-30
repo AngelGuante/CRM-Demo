@@ -7,7 +7,7 @@ const { AmountOnAccountService } = require('../services/AmountOnAccount.js');
 const service = new ProductsService();
 const amountOnAccountService = new AmountOnAccountService();
 
-class SellerService {
+class InvoiceBuyService {
     async Insert(req) {
         try {
             const userSigned = GetUserSigned(req);
@@ -201,4 +201,4 @@ class SellerService {
     }
 }
 
-module.exports = SellerService
+module.exports = InvoiceBuyService

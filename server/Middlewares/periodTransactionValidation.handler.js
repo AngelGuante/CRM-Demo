@@ -10,11 +10,11 @@ const periodTransaction = new PeriodTransaction();
 const periodTransactionValidationhandler = async (req, res, next) => {
     const userSigned = GetUserSigned(req);
 
-    const valid = await periodTransaction.Validate({
+    const invalid = await periodTransaction.Validate({
         branch_office: userSigned['branch_office']
     });
 
-    if (!valid)
+    if (invalid)
         next();
     else
         next(res.status(409).json(JSON.parse(`{"status": 409, "Conflict": "Unauthorized", "message": "Conflict to create transaction"}`)));

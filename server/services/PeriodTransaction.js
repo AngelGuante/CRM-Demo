@@ -13,7 +13,7 @@ class PeriodTransaction {
             }
         });
 
-        if (lastPeriodTransaction && lastPeriodTransaction['dataValues']['createdat'] <= new Date().toISOString().substring(0, 10))
+        if (lastPeriodTransaction && lastPeriodTransaction['dataValues']['createdat'] < new Date().toISOString().substring(0, 10))
             return true;
 
         return false;

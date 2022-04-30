@@ -1,6 +1,11 @@
 // Validate if the user has a permission
 // *************************************
 
+//---------
+//- TO DO -
+//---------
+//Validar si el usuario tiene acceso antes de validar los permisos.
+
 const { GetUserSigned } = require('../Utils/staticsMethods.js');
 
 const permissionHandler = (permissionId) => {
