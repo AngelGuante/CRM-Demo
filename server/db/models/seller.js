@@ -7,12 +7,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    seller_client_status_id: {
+    seller_customer_status_id: {
       type: DataTypes.SMALLINT,
       allowNull: false,
       defaultValue: 1,
       references: {
-        model: 'seller_client_status',
+        model: 'seller_customer_status',
         key: 'id'
       }
     },

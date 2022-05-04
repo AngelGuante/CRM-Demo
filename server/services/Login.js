@@ -12,7 +12,7 @@ class LoginService {
                                                     WHERE role_id = R.id
                                                     GROUP BY role_id
                                                     ),
-                                                    (SELECT string_agg(access_id::text, ',')  access
+                                                    (SELECT string_agg(DISTINCT(access_id)::text, ',')  access
                                                     FROM Role_Permission_Access 
                                                     WHERE role_id = R.id
                                                     GROUP BY role_id

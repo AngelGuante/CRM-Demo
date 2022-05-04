@@ -17,11 +17,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     customer_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'customer',
-        key: 'id'
-      }
+      allowNull: false
     },
     contact: {
       type: DataTypes.STRING(40),

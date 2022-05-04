@@ -33,11 +33,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     createdfor_seller_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'seller',
-        key: 'id'
-      }
+      allowNull: false
     },
     branch_office_id: {
       type: DataTypes.INTEGER,

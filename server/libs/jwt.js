@@ -1,9 +1,8 @@
 const { config } = require('../config/config.js');
 const jwt = require('jsonwebtoken');
 
-const signToken = payload => {
-    return jwt.sign(payload, config.jwtSecret);
-}
+const signToken = payload =>
+    jwt.sign(payload, config.jwtSecret);
 
 const validateToken = token => {
     try{

@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('seller_client_status', {
+  return sequelize.define('seller_customer_status', {
     id: {
       type: DataTypes.SMALLINT,
       allowNull: false,
@@ -16,12 +16,12 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'seller_client_status',
+    tableName: 'seller_customer_status',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "pk_seller_client_status",
+        name: "pk_seller_customer_status",
         unique: true,
         fields: [
           { name: "id" },

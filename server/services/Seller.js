@@ -12,7 +12,7 @@ class SellerService {
         const searchResult = await models.seller.findAll({
             offset: data['offset'] * SelectsTotalRegists,
             limit: SelectsTotalRegists,
-            attributes: [['seller_client_status_id', 'status'], 'code', 'name'],
+            attributes: [['seller_customer_status_id', 'status'], 'code', 'name'],
             where: {
                 code: {
                     [Op.like]: `%${data['code']}%`
@@ -44,9 +44,8 @@ class SellerService {
             const dataFormated = {
                 branch_office_id: userSigned['company_id'],
                 code: data.code.toLowerCase(),
-                name: data.name.toLowerCase(),
-
-                contacts: data.contacts
+                name: data.name.toLowerCase()
+                // contacts: data.contacts
             }
 
             //Validate if seller have less or equals the limit of seller contacts
@@ -129,7 +128,7 @@ class SellerService {
             const userSigned = GetUserSigned(req);
             const data = req.body;
             const dataFormated = {
-                seller_client_status_id: data.status,
+                seller_customer_status_id: data.status,
                 code: data.code.toLowerCase(),
                 name: data.name.toLowerCase(),
 
@@ -154,7 +153,7 @@ class SellerService {
             if (entity)
                 //Update entity
                 await entity.seller.update({
-                    seller_client_status_id: dataFormated['seller_client_status_id'],
+                    seller_customer_status_id: dataFormated['seller_customer_status_id'],
                     name: dataFormated['name']
                 });
             else {

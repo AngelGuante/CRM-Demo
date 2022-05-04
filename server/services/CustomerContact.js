@@ -3,21 +3,21 @@ const sequelize = require('../libs/sequelize.js');
 const { GetUserSigned } = require('../Utils/staticsMethods.js');
 const { MaxContactsPerEntity } = require('../Utils/staticsVariables.js');
 
-const nameEntity = 'Seller Contact';
+const nameEntity = 'Customer Contact';
 
-class SellerContactService {
+class CustomerContactService {
     async Select(req) {
         const userSigned = GetUserSigned(req);
         const data = req.query;
-        const searchResult = await models.seller_contact.findAll({
+        const searchResult = await models.customer_contact.findAll({
             attributes: [['contact_type_id', 'type'], 'contact'],
             include: [
                 {
-                    model: models.seller, as: 'seller',
+                    model: models.customer, as: 'customer',
                     attributes: [],
                     where: {
                         branch_office_id: userSigned['company_id'],
-                        code: data['code']
+                        document: data['document']
                     }
                 }
             ]
@@ -33,7 +33,7 @@ class SellerContactService {
         return {
             "status": 204,
             "title": "No Content",
-            "message": "No seller found"
+            "message": `No ${nameEntity} found`
         };
     }
 
@@ -42,30 +42,30 @@ class SellerContactService {
             const userSigned = GetUserSigned(req);
             const data = req.body;
             const dataFormated = {
-                code: data.code.toLowerCase(),
+                document: data.document.toLowerCase(),
 
                 contacts: data.contacts
             }
 
-            //Query to get Id of seller and count of seller contacts to avoid set more than limit seller can have
-            const seller = (await sequelize.query(`SELECT COUNT(SC.*) totalSellerContacts, S.id
-                                            FROM seller_contact SC 
-                                            RIGHT JOIN Seller S ON S.id = SC.seller_id
-                                            WHERE S.branch_office_id = ${userSigned['company_id']}
-                                            AND S.code = '${dataFormated['code']}'
-                                            GROUP BY S.Id`))[0][0];
-            if (seller) {
-                if ((Number(seller['totalsellercontacts']) + dataFormated['contacts'].length) > MaxContactsPerEntity)
+            //Query to get Id of customer and count of customer contacts to avoid set more than limit customer can have
+            const customer = (await sequelize.query(`SELECT COUNT(CC.*) totalCustomerContacts, C.id
+                                            FROM customer_contact CC 
+                                            RIGHT JOIN Customer C ON C.id = CC.Customer_id
+                                            WHERE C.branch_office_id = ${userSigned['company_id']}
+                                            AND C.document = '${dataFormated['document']}'
+                                            GROUP BY C.Id`))[0][0];
+            if (customer) {
+                if ((Number(customer['totalcustomercontacts']) + dataFormated['contacts'].length) > MaxContactsPerEntity)
                     return {
                         "status": 406,
                         "title": "Not Aceptable",
-                        "message": `Seller can't have more than ${MaxContactsPerEntity} contacts`
+                        "message": `${nameEntity} can't have more than ${MaxContactsPerEntity} contacts`
                     };
                 else
                     dataFormated['contacts'].forEach(async x => {
-                        await models.seller_contact.create({
+                        await models.customer_contact.create({
                             contact_type_id: x['type'],
-                            seller_id: seller['id'],
+                            customer_id: customer['id'],
                             contact: x['contact'].toLowerCase(),
                         });
                     });
@@ -93,20 +93,20 @@ class SellerContactService {
             const userSigned = GetUserSigned(req);
             const data = req.body;
             const dataFormated = {
-                code: data.code.toLowerCase(),
+                document: data.document.toLowerCase(),
 
                 contact: data.contact
             };
 
-            //Get seller_contact to delete
-            const tableData = await models.seller_contact.findOne({
+            //Get customer_contact to delete
+            const tableData = await models.customer_contact.findOne({
                 where: { contact: dataFormated['contact'] },
                 include: [
                     {
-                        model: models.seller, as: 'seller',
+                        model: models.customer, as: 'customer',
                         where: {
                             branch_office_id: userSigned['company_id'],
-                            code: dataFormated['code']
+                            document: dataFormated['document']
                         }
                     }
                 ]
@@ -114,7 +114,7 @@ class SellerContactService {
 
             if (tableData)
                 //Delete entity
-                await models.seller_contact.destroy({
+                await models.customer_contact.destroy({
                     where: { id: tableData['dataValues']['id'] }
                 });
             else {
@@ -142,4 +142,4 @@ class SellerContactService {
     }
 }
 
-module.exports = SellerContactService;
+module.exports = CustomerContactService;

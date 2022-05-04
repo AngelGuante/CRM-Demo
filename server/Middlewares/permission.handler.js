@@ -15,6 +15,8 @@ const permissionHandler = (permissionId) => {
         permissionName = 'Insert Producto'
     else if (permissionId == 2)
         permissionName = 'Insert Seller'
+        else if (permissionId == 4)
+        permissionName = 'Insert Sell'
 
     return (req, res, next) => {
         const permissions = (GetUserSigned(req))['permissions'];
