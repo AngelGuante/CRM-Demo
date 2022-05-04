@@ -33,7 +33,11 @@ module.exports = function(sequelize, DataTypes) {
     },
     createdfor_customer_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'customer',
+        key: 'id'
+      }
     },
     branch_office_id: {
       type: DataTypes.INTEGER,
@@ -47,9 +51,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    createat: {
+    createdat: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.fn('now')
     },
     amount: {
       type: DataTypes.DECIMAL(19,4),

@@ -9,11 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     credit_invoice_pay_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'credit_invoice_pay',
-        key: 'id'
-      }
+      allowNull: false
     },
     amount: {
       type: DataTypes.DECIMAL(19,4),

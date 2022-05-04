@@ -5,12 +5,15 @@ const { AmountOnAccountService } = require('../services/AmountOnAccount.js');
 
 const amountOnAccountService = new AmountOnAccountService();
 
+// TO DO
+// Agruoar cosas que se usan iguales en Invoicebuy e InvoiceSell
+
 class InvoiceSellService {
     async Insert(req) {
         try {
             const userSigned = GetUserSigned(req);
             const dataFormated = {
-                code: req.body['code'].toLowerCase(),
+                document: req.body['document'].toLowerCase(),
                 status: req.body['status'],
                 amount: req.body['amount'],
 
@@ -22,8 +25,8 @@ class InvoiceSellService {
             //********************************************************************** */
 
             //Validate if the customer exists
-            const seller = await models.seller_branch_office.findAll({
-                attributes: ['branch_office_id'],
+            const customer = await models.customer.findAll({
+                attributes: ['id'],
                 include: [
                     {
                         model: models.branch_office, as: 'branch_office',
@@ -31,26 +34,11 @@ class InvoiceSellService {
                         where: {
                             company_id: userSigned['company_id']
                         },
-                    },
-                    {
-                        model: models.seller, as: 'seller',
-                        attributes: ['id', 'code'],
-                        where: {
-                            code: dataFormated.code
-                        }
                     }
                 ]
             });
 
-            console.log();
-            //DEMO
-            return {
-                "status": 201,
-                "title": "Success",
-                "message": `success`
-            };
-
-            if (!seller.length)
+            if (!customer.length)
                 return {
                     "status": 406,
                     "title": "Not Aceptable",
@@ -58,8 +46,8 @@ class InvoiceSellService {
                 };
 
             //Validate if some product is not exist on any branch office
-            const productsOnInvoiceBuy = await models.branch_office_product.findAll({
-                attributes: ['cost', 'quantity', 'branch_office_id'],
+            const productsOnInvoiceSell = await models.branch_office_product.findAll({
+                attributes: ['cost', 'price', 'quantity', 'branch_office_id'],
                 include: [
                     {
                         model: models.branch_office, as: 'branch_office',
@@ -82,7 +70,7 @@ class InvoiceSellService {
 
             let productNotExist = [];
             dataFormated.products.map(x => x['product']).forEach(x => {
-                if (!productsOnInvoiceBuy.some(y => y['dataValues']['product']['dataValues']['code'] == x))
+                if (!productsOnInvoiceSell.some(y => y['dataValues']['product']['dataValues']['code'] == x))
                     productNotExist.push(x);
             });
 
@@ -93,40 +81,28 @@ class InvoiceSellService {
                     "message": `Products '${productNotExist}' not exists on any branch office `
                 };
 
-            //********************************************************************** */
-            //            Adding entities to current branch if is necessary
-            //********************************************************************** */
-
-            //If seller exists only in another branch of the same company, create the seller on this branch
-            if (!seller.some(x => x['dataValues']['branch_office_id'] == userSigned['branch_office']))
-                await models.seller_branch_office.create({
-                    seller_id: seller[0]['dataValues']['seller']['id'],
-                    branch_office_id: userSigned['branch_office']
-                });
-
-            //If product exists only in another branch of the same company, create the product on this branch
+            //Validate if quantity of all product are less than the quantity on inventory
+            let productInvalidAmount = [];
             dataFormated.products.forEach(async x => {
-                if (!productsOnInvoiceBuy.some(poi => poi['dataValues']['branch_office_id'] == userSigned['branch_office'])) {
-                    const productData = productsOnInvoiceBuy.find(y => y['dataValues']['product']['dataValues']['code'] == x['product']);
+                const product = productsOnInvoiceSell.find(item => item['dataValues']['product']['dataValues']['code'] === x['product'] && item['dataValues']['branch_office_id'] == userSigned['branch_office']);
 
-                    await models.branch_office_product.create({
-                        branch_office_id: userSigned['branch_office'],
-                        product_id: productData['dataValues']['product']['id'],
-                        cost: 0,
-                        price: 0,
-                        quantity: 0
-                    });
-
-                    await service.SaveProductHistory(userSigned, { 'id': productData['dataValues']['product']['id'], 'cost': 0 }, 'cost', 'first-buy');
-                }
+                if (x['quantity'] > product['dataValues']['quantity'])
+                    productInvalidAmount.push(x['product']);
             });
+
+            if (productInvalidAmount.length)
+                return {
+                    "status": 406,
+                    "title": "Not Aceptable",
+                    "message": `Products '${productInvalidAmount}' can't be selled `
+                };
 
             //********************************************************************** */
             //                              Saving all
             //********************************************************************** */
 
-            //Get last IdentifierNumber on invoice_buy in the branch office
-            let IdentifierNumber = await models.invoice_buy.findOne({
+            //Get last IdentifierNumber on invoice_sell in the branch office
+            let IdentifierNumber = await models.invoice_sell.findOne({
                 attributes: ['identifiernumber'],
                 order: [['createdat', 'DESC']],
                 limit: 1,
@@ -136,27 +112,29 @@ class InvoiceSellService {
                 }
             });
 
-            //Save invoice Buy
-            const invoicebuyCreated = await models.invoice_buy.create({
+            //Save invoice Sell
+            const invoicesellCreated = await models.invoice_sell.create({
                 invoice_type_id: 1,
                 invoice_status_id: dataFormated.status,
                 createdby_user_id: userSigned['id'],
-                createdfor_seller_id: seller[0]['seller']['dataValues']['id'],
+                createdfor_customer_id: customer[0]['dataValues']['id'],
                 branch_office_id: userSigned['branch_office'],
+                amount: dataFormated['amount'],
                 identifiernumber: IdentifierNumber ? ++IdentifierNumber['dataValues']['identifiernumber'] : 1000
             });
 
-            //Save details of products on invoice buy
+            //Save details of products on invoice sell
             dataFormated.products.forEach(async x => {
-                const product = productsOnInvoiceBuy.find(item => item['dataValues']['product']['dataValues']['code'] === x['product'] && item['dataValues']['branch_office_id'] == userSigned['branch_office']);
+                const product = productsOnInvoiceSell.find(item => item['dataValues']['product']['dataValues']['code'] === x['product'] && item['dataValues']['branch_office_id'] == userSigned['branch_office']);
 
-                await models.invoice_buy_product_detail.create({
-                    invoice_buy_id: invoicebuyCreated['id'],
+                await models.invoice_sell_product_detail.create({
+                    invoice_id: invoicesellCreated['id'],
                     product_id: product['product']['dataValues']['id'],
                     amount: x['amount'],
                     quantity: x['quantity'],
                     quantitybeforeinvoice: product['dataValues']['quantity'],
-                    costoninvoice: product['dataValues']['cost']
+                    costoninvoice: product['dataValues']['cost'],
+                    priceoninvoice: product['dataValues']['price']
                 });
 
                 //Update quantity and Cost on Branch_Office_Product
@@ -167,19 +145,9 @@ class InvoiceSellService {
                     }
                 });
 
-                // if cost is different, then, save the history of cost change
                 let productData = {
-                    quantity: branch_office_product['dataValues']['quantity'] + x['quantity']
+                    quantity: branch_office_product['dataValues']['quantity'] - x['quantity']
                 };
-
-                if (product['dataValues']['cost'] !== x['amount']) {
-                    // -------
-                    // -TO DO-
-                    // -------
-                    // *. Averiguar la formular para cuando el se quiera cambiar codigo del producto de manera automatica.
-                    productData.cost = x['amount'];
-                    await service.SaveProductHistory(userSigned, { 'id': product['product']['dataValues']['id'], 'cost': x['amount'] }, 'cost', `buy-change-${invoicebuyCreated['id']}`);
-                }
 
                 await branch_office_product.update(productData);
             });

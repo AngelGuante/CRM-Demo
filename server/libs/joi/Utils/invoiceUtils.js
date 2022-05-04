@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { UserCodeMaxLength, ProductCodeMaxLength } = require('../../../Utils/staticsVariables.js');
+const { ProductCodeMaxLength } = require('../../../Utils/staticsVariables.js');
 
 //*********************
 //*Customs validations*
@@ -26,15 +26,7 @@ const contactObjectCustomValidation = (value) => {
 }
 
 const status = Joi.number().min(1).max(2);
-const code = Joi.string().max(UserCodeMaxLength);
 const products = Joi.array().custom(contactObjectCustomValidation);
 const amount = Joi.number();
 
-const object = Joi.object({
-    code: code.required(),
-    products: products.required(),
-    status: status.required(),
-    amount: amount.required()
-});
-
-module.exports = { object }
+module.exports = { status, products, amount }

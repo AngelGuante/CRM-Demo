@@ -6,9 +6,9 @@ const { permissionHandler } = require('../Middlewares/permission.handler.js');
 const { periodTransactionValidationhandler } = require('../Middlewares/periodTransactionValidation.handler');
 const { validatorHandler } = require('../Middlewares/validator.handler.js');
 const { InsertInvoiceSell } = require('../libs/joi/Invoice_sellDTO.js');
-// const SellerService = require('../services/Invoicebuy.js');
+const InvoiceService = require('../services/Invoicesell.js');
 
-// const service = new SellerService();
+const service = new InvoiceService();
 
 router.post('/Insert',
     tokenValidatorHandler,
@@ -17,9 +17,8 @@ router.post('/Insert',
     periodTransactionValidationhandler,
     validatorHandler(InsertInvoiceSell, 'body'),
     async (req, res) => {
-        return res.json({'result':'done!'})
-        // const result = await service.Insert(req);
-        // res.status(result.status).json(result);
+        const result = await service.Insert(req);
+        res.status(result.status).json(result);
     }
 );
 
