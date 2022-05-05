@@ -19,10 +19,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    creditamount: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     duesamount: {
       type: DataTypes.INTEGER,
       allowNull: false

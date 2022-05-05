@@ -1,9 +1,11 @@
 const { models } = require('../libs/sequelize.js');
 const { Op } = require("sequelize");
-const { GetUserSigned } = require('../Utils/staticsMethods.js');
+const { GetUserSigned, MoneyToNumber } = require('../Utils/staticsMethods.js');
 const { AmountOnAccountService } = require('../services/AmountOnAccount.js');
+const { ActiveCreditInvoiceCosts } = require('../services/ActiveCreditInvoiceCosts.js');
 
 const amountOnAccountService = new AmountOnAccountService();
+const activeCreditInvoiceCosts = new ActiveCreditInvoiceCosts();
 
 // TO DO
 // Agruoar cosas que se usan iguales en Invoicebuy e InvoiceSell
@@ -15,9 +17,16 @@ class InvoiceSellService {
             const dataFormated = {
                 document: req.body['document'].toLowerCase(),
                 status: req.body['status'],
+                type: req.body['type'],
                 amount: req.body['amount'],
 
-                products: req.body['products']
+                products: req.body['products'],
+
+                initial: req.body['initial'],
+                creditamount: req.body['creditamount'],
+                duesamount: req.body['duesamount'],
+                duesquantity: req.body['duesquantity'],
+                duesprofit: req.body['duesprofit']
             }
 
             //********************************************************************** */
@@ -114,7 +123,7 @@ class InvoiceSellService {
 
             //Save invoice Sell
             const invoicesellCreated = await models.invoice_sell.create({
-                invoice_type_id: 1,
+                invoice_type_id: dataFormated['type'],
                 invoice_status_id: dataFormated.status,
                 createdby_user_id: userSigned['id'],
                 createdfor_customer_id: customer[0]['dataValues']['id'],
@@ -156,6 +165,33 @@ class InvoiceSellService {
             if (dataFormated.status === 1)
                 // Save Petty Cash total of invoice
                 await amountOnAccountService.Insert({ 'branch_office_id': userSigned['branch_office'], 'amount': dataFormated.amount });
+
+            //----------------
+            //-Credit invoice-
+            //----------------
+            // If status of invoice is Credit Invoice
+            if (dataFormated.type === 3) {
+                await models.credit_invoice_detail.create({
+                    invoice_id: invoicesellCreated['id'],
+                    initial: dataFormated['initial'],
+                    creditamount: dataFormated['creditamount'],
+                    duesamount: dataFormated['duesamount'],
+                    duesquantity: dataFormated['duesquantity'],
+                    duesprofit: dataFormated['duesprofit']
+                });
+
+                // Save Petty Cash total of invoice
+                await amountOnAccountService.Insert({ 'branch_office_id': userSigned['branch_office'], 'amount': dataFormated['initial'] });
+
+                //Save cost of invoice
+                let costSum = 0;
+                dataFormated.products.forEach(async x => {
+                    const product = productsOnInvoiceSell.find(item => item['dataValues']['product']['dataValues']['code'] === x['product'] && item['dataValues']['branch_office_id'] == userSigned['branch_office']);
+
+                    costSum += MoneyToNumber(product['dataValues']['cost']);
+                });
+                activeCreditInvoiceCosts.Insert({ 'branch_office_id': userSigned['branch_office'], 'amount': costSum });
+            }
 
             return {
                 "status": 201,

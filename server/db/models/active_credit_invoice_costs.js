@@ -16,8 +16,8 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     amount: {
-      type: DataTypes.INTEGER,
-      allowNull: true
+      type: DataTypes.DECIMAL(19,4),
+      allowNull: false
     }
   }, {
     sequelize,
