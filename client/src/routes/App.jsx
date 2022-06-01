@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LoginContainer } from '../containers/Login'
-// import '../styles/App.css';
+import '../styles/App.css';
 
 function App() {
   return (
