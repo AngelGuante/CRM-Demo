@@ -2,6 +2,13 @@ import { useState } from "react";
 import { Post } from "../utils/requests";
 import { FormInput } from '../componets/form_imputs'
 import { Loading } from '../componets/loading'
+import { PromiseToast } from '../utils/Toast'
+import { Toaster } from 'react-hot-toast';
+
+//---------
+//- TO DO -
+//---------
+//*Corregir el try catch del metodo Login ya que cuando da un 401 explota. buscar la forma de que no explote para quitar el try Catch
 
 const LoginContainer = () => {
     // Login form
@@ -23,14 +30,17 @@ const LoginContainer = () => {
 
     // METHODS
     const Login = async (event) => {
-        event.preventDefault();
         setLoading(true);
+        event.preventDefault();
+
+        try {
+            await PromiseToast(Post(form), {
+                'loadingMessage': 'Accediendo',
+                'success': `Welcome ${form['user']}!`,
+                'error': 'Credenciales Incorrectos'
+            });
+        } catch (Exception) { }
         
-        window.CallNotification();
-
-        const response = await Post(form);
-        console.log(response)
-
         setLoading(false);
     }
 
@@ -43,6 +53,7 @@ const LoginContainer = () => {
                 <div className="card">
 
                     {loading && <Loading />}
+                    <Toaster />
 
                     <div className="card-body login-card-body">
                         <p className="login-box-msg">Iniciar Sección</p>
