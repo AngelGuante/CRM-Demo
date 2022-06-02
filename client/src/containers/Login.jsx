@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Post } from "../utils/requests";
+import { Post } from "../utils/Requests";
 import { FormInput } from '../componets/form_imputs'
 import { Loading } from '../componets/loading'
 import { PromiseToast } from '../utils/Toast'
+import { GetBrowserData, SaveBrowserData, DeleteBrowserData } from '../utils/BrowserData';
 import { Toaster } from 'react-hot-toast';
 
 //---------
@@ -11,14 +12,15 @@ import { Toaster } from 'react-hot-toast';
 //*Corregir el try catch del metodo Login ya que cuando da un 401 explota. buscar la forma de que no explote para quitar el try Catch
 
 const LoginContainer = () => {
+
     // Login form
     const [form, setForm] = useState({
-        companyNumber: 1000,
-        user: 'msuero2',
-        pass: '2109'
+        companyNumber: GetBrowserData('rememberLoginForm') === 'true' ? Number(GetBrowserData('companyNumber')) : '',
+        user: GetBrowserData('rememberLoginForm') === 'true' ? GetBrowserData('user') : '',
+        pass: GetBrowserData('rememberLoginForm') === 'true' ? GetBrowserData('pass') : ''
     });
 
-    const handleIputChange = (event) => {
+    const handleLoginIputsChange = (event) => {
         setForm({
             ...form,
             [event.target.name]: event.target.value
@@ -28,19 +30,43 @@ const LoginContainer = () => {
     // Login Form Loading
     const [loading, setLoading] = useState(false);
 
+    // Remember Login Form
+    const [rememberLoginForm, setRememberLoginForm] = useState(GetBrowserData('rememberLoginForm') === 'true');
+
+    const handlerememberLoginForm = (event) => {
+        setRememberLoginForm(event.target.checked)
+        if (event.target.checked)
+            SaveBrowserData([
+                { name: 'rememberLoginForm', value: event.target.checked },
+                { name: 'companyNumber', value: form['companyNumber'] },
+                { name: 'user', value: form['user'] },
+                { name: 'pass', value: form['pass'] }
+            ], 'value');
+        else
+            DeleteBrowserData([
+                'rememberLoginForm',
+                'companyNumber',
+                'user',
+                'pass'
+            ]);
+    }
+
     // METHODS
     const Login = async (event) => {
         setLoading(true);
         event.preventDefault();
 
         try {
-            await PromiseToast(Post(form), {
+            const response = await PromiseToast(Post(form), {
                 'loadingMessage': 'Accediendo',
                 'success': `Welcome ${form['user']}!`,
                 'error': 'Credenciales Incorrectos'
             });
+
+            if (response['status'] === 200)
+                SaveBrowserData(response, 'json');
         } catch (Exception) { }
-        
+
         setLoading(false);
     }
 
@@ -63,7 +89,7 @@ const LoginContainer = () => {
                                 name='companyNumber'
                                 placeholder='Company Number'
                                 maxLength='6'
-                                onChange={handleIputChange}
+                                onChange={handleLoginIputsChange}
                                 type='Number'
                                 icon="fas fa-hashtag" />
                             <FormInput
@@ -71,20 +97,24 @@ const LoginContainer = () => {
                                 name='user'
                                 placeholder='Username'
                                 maxLength='15'
-                                onChange={handleIputChange}
+                                onChange={handleLoginIputsChange}
                                 icon="fas fa-user" />
                             <FormInput
                                 value={form.pass}
                                 name='pass'
                                 placeholder='Password'
                                 maxLength='30'
-                                onChange={handleIputChange}
+                                onChange={handleLoginIputsChange}
                                 type='Password'
                                 icon="fas fa-lock" />
                             <div className="row">
                                 <div className="col-8">
                                     <div className="icheck-primary">
-                                        <input type="checkbox" id="remember" />
+                                        <input
+                                            checked={rememberLoginForm}
+                                            type="checkbox"
+                                            id="remember"
+                                            onChange={handlerememberLoginForm} />
                                         <label htmlFor="remember">
                                             Recordar Datos
                                         </label>
