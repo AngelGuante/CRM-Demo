@@ -6,6 +6,7 @@ const InvoiceBuy = require('./Invoicebuy.js');
 const Customer = require('./Customer.js');
 const CustomerContact = require('./CustomerContact .js');
 const InvoiceSell = require('./Invoicesell.js');
+const Home = require('./Home.js');
 
 const setRoutes = express => {
     express.use('/Api/Login', login);
@@ -16,6 +17,7 @@ const setRoutes = express => {
     express.use('/Api/Customer', Customer);
     express.use('/Api/CustomerContact', CustomerContact);
     express.use('/Api/InvoiceSell', InvoiceSell);
+    express.use('/Api/Home', Home);
 }
 
 module.exports = setRoutes;

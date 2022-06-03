@@ -1,5 +1,7 @@
 import toast from 'react-hot-toast';
 
+const ErrorToast = (message) => toast.error(message)
+
 const PromiseToast = async (myPromise, params) => {
     return await toast.promise(new Promise(async (resolve, reject) => {
         const promiseResponse = await myPromise;
@@ -17,4 +19,7 @@ const PromiseToast = async (myPromise, params) => {
     });
 }
 
-export { PromiseToast }
+export {
+    ErrorToast,
+    PromiseToast
+}

@@ -8,7 +8,7 @@ const SaveBrowserData = (data, type) => {
             case 'Login Success':
                 const dataSplited = data['message'].split(' ');
 
-                localStorage.setItem('token', dataSplited[0]);
+                localStorage.setItem('token', `Bearer ${dataSplited[0]}`);
                 localStorage.setItem('access', dataSplited[1]);
                 localStorage.setItem('permissions', dataSplited[2]);
 

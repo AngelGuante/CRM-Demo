@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Post } from "../utils/Requests";
-import { FormInput } from '../componets/form_imputs'
+import { FormInput } from '../componets/formInput'
 import { Loading } from '../componets/loading'
-import { PromiseToast } from '../utils/Toast'
+import { PromiseToast, ErrorToast } from '../utils/Toast'
 import { GetBrowserData, SaveBrowserData, DeleteBrowserData } from '../utils/BrowserData';
 import { Toaster } from 'react-hot-toast';
 
@@ -13,9 +13,17 @@ import { Toaster } from 'react-hot-toast';
 
 const LoginContainer = () => {
 
+    useEffect(() => {
+        const redirected = GetBrowserData('reazonRedirect');
+        if (redirected) {
+            ErrorToast(redirected);
+            DeleteBrowserData(['reazonRedirect']);
+        }
+    }, []);
+
     // Login form
     const [form, setForm] = useState({
-        companyNumber: GetBrowserData('rememberLoginForm') === 'true' ? Number(GetBrowserData('companyNumber')) : '',
+        companyNumber: GetBrowserData('rememberLoginForm') === 'true' ? GetBrowserData('companyNumber') : '',
         user: GetBrowserData('rememberLoginForm') === 'true' ? GetBrowserData('user') : '',
         pass: GetBrowserData('rememberLoginForm') === 'true' ? GetBrowserData('pass') : ''
     });
@@ -57,14 +65,26 @@ const LoginContainer = () => {
         event.preventDefault();
 
         try {
-            const response = await PromiseToast(Post(form), {
+            const response = await PromiseToast(Post('login/Access',
+                {
+                    ...form, companyNumber: Number(form.companyNumber)
+                }), {
                 'loadingMessage': 'Accediendo',
                 'success': `Welcome ${form['user']}!`,
                 'error': 'Credenciales Incorrectos'
             });
 
-            if (response['status'] === 200)
+            if (response['status'] === 200) {
+                if (rememberLoginForm)
+                    SaveBrowserData([
+                        { name: 'companyNumber', value: form['companyNumber'] },
+                        { name: 'user', value: form['user'] },
+                        { name: 'pass', value: form['pass'] }
+                    ], 'value');
                 SaveBrowserData(response, 'json');
+
+                window.location.href = '/Home';
+            }
         } catch (Exception) { }
 
         setLoading(false);
