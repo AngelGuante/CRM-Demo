@@ -16,7 +16,6 @@ const HomeContainer = () => {
 
     return (
         <div>
-            {tokenValidated ?? <h1>dasda</h1>}
         </div>
     );
 }

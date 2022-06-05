@@ -6,7 +6,7 @@ const { SignedInUsers } = require('../Utils/staticsVariables.js');
 class LoginService {
     async SignIn(req) {
         const data = req.body;
-        const [user] = (await sequelize.query(`SELECT U.id, ES.name, C.companynumber, C.id Cid, U.password, BO.id branch_office_id, R.id rol_id,
+        const [user] = (await sequelize.query(`SELECT U.id, ES.name, C.companynumber, C.id Cid, U.password, BO.id branch_office_id, R.id rol_id, J.name Jobname,
                                                     (SELECT string_agg(permission_id::text, ',')  permissions
                                                     FROM Role_Permission_Access 
                                                     WHERE role_id = R.id
@@ -56,7 +56,7 @@ class LoginService {
                     "access": user['access'],
                 });
 
-                return `{"status": 200, "title": "Login Success", "message": "${token} ${user['access']} ${user['permissions']}"}`;
+                return `{"status": 200, "title": "Login Success", "message": "${token} ${user['access']} ${user['permissions']} ${user['jobname']}"}`;
             }
         }
         return;

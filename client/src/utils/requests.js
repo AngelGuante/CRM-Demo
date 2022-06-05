@@ -1,4 +1,4 @@
-import { SaveBrowserData, GetBrowserData } from './BrowserData';
+import { DeleteBrowserData, SaveBrowserData, GetBrowserData } from './BrowserData';
 
 const URL = 'http://localhost:3000/Api/';
 
@@ -19,7 +19,8 @@ const Get = async (serverMethod) => {
     })).json();
 
     if (response['status'] === 401) {
-        SaveBrowserData([{'name': 'reazonRedirect', 'value': response['message']}], 'value')
+        DeleteBrowserData(['token']);
+        SaveBrowserData([{ 'name': 'reazonRedirect', 'value': response['message'] }], 'value');
         window.location.href = 'Login';
     }
 

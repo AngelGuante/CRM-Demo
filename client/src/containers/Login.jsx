@@ -19,6 +19,10 @@ const LoginContainer = () => {
             ErrorToast(redirected);
             DeleteBrowserData(['reazonRedirect']);
         }
+
+        const haveToken = GetBrowserData('token');
+        if (haveToken)
+            window.location.href = '/Home';
     }, []);
 
     // Login form
@@ -61,8 +65,8 @@ const LoginContainer = () => {
 
     // METHODS
     const Login = async (event) => {
-        setLoading(true);
         event.preventDefault();
+        setLoading(true);
 
         try {
             const response = await PromiseToast(Post('login/Access',
