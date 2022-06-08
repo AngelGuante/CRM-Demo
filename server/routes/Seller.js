@@ -11,7 +11,8 @@ const service = new SellerService();
 
 router.get('/',
     tokenValidatorHandler,
-    accesHandler(2),
+    accesHandler(4),
+    permissionHandler(5),
     validatorHandler(SelectSeller, 'query'),
     async (req, res) => {
         const result = await service.Select(req);
@@ -21,6 +22,7 @@ router.get('/',
 
 router.post('/Insert',
     tokenValidatorHandler,
+    accesHandler(4),
     permissionHandler(2),
     validatorHandler(InsertSeller, 'body'),
     async (req, res) => {
@@ -31,6 +33,7 @@ router.post('/Insert',
 
 router.post('/Update',
     tokenValidatorHandler,
+    accesHandler(4),
     permissionHandler(2),
     validatorHandler(UpdateSeller, 'body'),
     async (req, res) => {

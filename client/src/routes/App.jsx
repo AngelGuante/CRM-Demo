@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { LoginContainer } from '../containers/Login'
-import { HomeContainer } from '../containers/Home'
+import { LoginContainer } from '../pages/Login'
+import { HomeContainer } from '../pages/Home'
+import { SellerContainer } from '../pages/Seller'
 import { Layout } from './Layout'
 
 import '../styles/App.css';
@@ -13,6 +14,7 @@ function App() {
 
         <Route element={<Layout />}>
           <Route exact path='/Home' element={<HomeContainer />} />
+          <Route exact path='/Seller' element={<SellerContainer />} />
         </Route>
 
       </Routes>

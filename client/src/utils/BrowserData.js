@@ -32,6 +32,8 @@ const DeleteBrowserData = (keys, type) => {
                 localStorage.removeItem('permissions');
                 localStorage.removeItem('Job');
                 break;
+            default:
+                break;
         }
     }
     else

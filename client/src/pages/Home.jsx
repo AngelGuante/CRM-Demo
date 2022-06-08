@@ -1,13 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Get } from "../utils/Requests";
 
 const HomeContainer = () => {
-    let tokenValidated = false;
+    const [tokenValidated, setTokenValidated] = useState(false);
 
     useEffect(() => {
         const validateToken = async () => {
             if (!tokenValidated) {
-                tokenValidated = !tokenValidated;
+                setTokenValidated(true);
                 await Get('Home');
             }
         }

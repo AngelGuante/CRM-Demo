@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom'
-import { Header } from '../componets/header'
-import { Aside } from '../componets/asidebar'
-import { Footer } from '../componets/footer'
+import { Header } from '../containers/header'
+import { Aside } from '../containers/asidebar'
+import { Footer } from '../containers/footer'
 
 const Layout = () => {
     return (

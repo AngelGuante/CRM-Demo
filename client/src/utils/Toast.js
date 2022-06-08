@@ -37,17 +37,17 @@ const CustomToast = (type) => {
                             <div className="card-footer">
                                 <div className="row">
                                     <div className="col-sm border-right">
-                                        <a className="btn btn-app bg-danger" onClick={(event) => {
+                                        <button className="btn btn-app bg-danger" onClick={() => {
                                             DeleteBrowserData(null, 'Login');
                                             window.location.href = '/Login';
                                         }}>
                                             <i className="fas fa-door-open" /> Cerrar Sección
-                                        </a>
+                                        </button>
                                     </div>
                                     <div className="col-sm">
-                                        <a className="btn btn-app" onClick={() => toast.dismiss(toastCreated.id)}>
+                                        <button className="btn btn-app" onClick={() => toast.dismiss(toastCreated.id)}>
                                             <i className="fas fa-times" /> Quitar
-                                        </a>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
