@@ -1,4 +1,5 @@
 import { DeleteBrowserData, SaveBrowserData, GetBrowserData } from './BrowserData';
+import { ErrorToast } from '../utils/Toast'
 
 const URL = 'http://localhost:3000/Api/';
 
@@ -12,19 +13,27 @@ const Post = async (serverMethod, data) =>
     })).json();
 
 const Get = async (serverMethod) => {
-    const response = await (await fetch(`${URL}${serverMethod}`, {
+    const response = await fetch(`${URL}${serverMethod}`, {
         headers: {
             'Authorization': `${GetBrowserData('token')}`
         }
-    })).json();
+    });
 
-    if (response['status'] === 401) {
+    if (response['status'] === 204) {
+        ErrorToast('No Content');
+        return {};
+    }
+
+    const json = await response.json();
+
+
+    if (json['status'] === 401) {
         DeleteBrowserData(['token']);
-        SaveBrowserData([{ 'name': 'reazonRedirect', 'value': response['message'] }], 'value');
+        SaveBrowserData([{ 'name': 'reazonRedirect', 'value': json['message'] }], 'value');
         window.location.href = 'Login';
     }
 
-    return response;
+    return json;
 }
 
 export {

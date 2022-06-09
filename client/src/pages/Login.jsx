@@ -23,7 +23,7 @@ const LoginContainer = () => {
         const haveToken = GetBrowserData('token');
         if (haveToken)
             window.location.href = '/Home';
-    }, []);
+    });
 
     // Login form
     const [form, setForm] = useState({

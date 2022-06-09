@@ -10,15 +10,15 @@ class SellerService {
     async Select(req) {
         const data = req.query;
         const searchResult = await models.seller.findAll({
-            offset: data['offset'] * SelectsTotalRegists,
+            offset: data['offset'],
             limit: SelectsTotalRegists,
             attributes: [['seller_customer_status_id', 'status'], 'code', 'name'],
             where: {
                 code: {
-                    [Op.like]: `%${data['code']}%`
+                    [Op.like]: data['code'] ? `%${data['code']}%` : '%%'
                 },
                 name: {
-                    [Op.like]: `%${data['name']}%`
+                    [Op.like]: data['name'] ? `%${data['name']}%` : '%%'
                 }
             }
         });

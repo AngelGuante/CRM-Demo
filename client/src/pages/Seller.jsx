@@ -1,23 +1,54 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Get } from "../utils/Requests";
 import { TableFixedHeader } from "../componets/tableFixedHeader";
 
 const SellerContainer = () => {
     const [sellers, setSellers] = useState([]);
-    const [sellersSetted, setSellersSetted] = useState(false);
-
-    useEffect(() => {
-        if (!sellersSetted) {
-            setSellersSetted(true);
-            const fillSeller = async () => {
-                GetData();
-            }
-            fillSeller();
-        }
+    const sellerFilled = useRef(false);
+    const [filterForm, setFilterForm] = useState({
+        searchInput: '',
+        selectOption: ''
     });
 
-    const GetData = async (params) => {
-        setSellers((await Get('seller/?code=&offset=0&name='))['message']);
+    useEffect(() => {
+        const fillSeller = async () => {
+            if (!sellerFilled.current) {
+                sellerFilled.current = true;
+                GetData();
+            }
+        }
+        fillSeller();
+    });
+
+    const handleFilterForm = (event) => {
+        setFilterForm({
+            ...filterForm,
+            [event.target.name]: event.target.value
+        });
+    }
+
+    const GetData = async () => {
+        let offset = sellers.length;
+        let url = `seller/?offset=${offset}`;
+
+
+        if (filterForm['selectOption'] === 'Código' && filterForm['searchInput'])
+            url += `&code=${filterForm['searchInput']}`
+        else if (filterForm['selectOption'] === 'Nombre' && filterForm['selectOption'])
+            url += `&name=${filterForm['searchInput']}`
+
+            console.log(filterForm['selectOption'])
+            console.log(url)
+
+        let data = (await Get(url))['message'];
+        if (data)
+            setSellers(sellers.concat((data)));
+    }
+
+    const FilterData = async () => {
+        console.log(filterForm)
+        setSellers([])
+        GetData();
     }
 
     return (
@@ -31,8 +62,12 @@ const SellerContainer = () => {
                     { 'name': 'code' },
                     { 'name': 'name' }]}
                 items={sellers}
-                showMoreDataButton={true}
                 getData={GetData}
+                filterData={FilterData}
+                filterOptions={[
+                    { 'name': 'Código' },
+                    { 'name': 'Nombre' }]}
+                filterOnChange={handleFilterForm}
             />
         </div>
     );
