@@ -3,8 +3,9 @@ import { Get } from "../utils/Requests";
 import { TableFixedHeader } from "../componets/tableFixedHeader";
 
 const SellerContainer = () => {
-    const [sellers, setSellers] = useState([]);
+    let sellersData = useRef([]);
     const sellerFilled = useRef(false);
+    const [sellers, setSellers] = useState([]);
     const [filterForm, setFilterForm] = useState({
         searchInput: '',
         selectOption: ''
@@ -25,29 +26,30 @@ const SellerContainer = () => {
             ...filterForm,
             [event.target.name]: event.target.value
         });
-    }
+    };
+
+    const [loading, setLoading] = useState(false);
 
     const GetData = async () => {
-        let offset = sellers.length;
+        setLoading(true);
+        let offset = sellersData.current.length;
         let url = `seller/?offset=${offset}`;
-
 
         if (filterForm['selectOption'] === 'Código' && filterForm['searchInput'])
             url += `&code=${filterForm['searchInput']}`
         else if (filterForm['selectOption'] === 'Nombre' && filterForm['selectOption'])
             url += `&name=${filterForm['searchInput']}`
 
-            console.log(filterForm['selectOption'])
-            console.log(url)
-
         let data = (await Get(url))['message'];
         if (data)
-            setSellers(sellers.concat((data)));
+            sellersData.current = sellersData.current.concat(data);
+
+        setSellers(sellersData.current);
+        setLoading(false);
     }
 
     const FilterData = async () => {
-        console.log(filterForm)
-        setSellers([])
+        sellersData.current = [];
         GetData();
     }
 
@@ -55,6 +57,7 @@ const SellerContainer = () => {
         <div>
             <TableFixedHeader
                 tableHeader={'Distribuidores'}
+                loading={loading}
                 columsHeaders={[
                     { 'name': 'Código' },
                     { 'name': 'Nombre' }]}
@@ -62,6 +65,7 @@ const SellerContainer = () => {
                     { 'name': 'code' },
                     { 'name': 'name' }]}
                 items={sellers}
+                indexCol={true}
                 getData={GetData}
                 filterData={FilterData}
                 filterOptions={[
