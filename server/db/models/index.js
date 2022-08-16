@@ -220,6 +220,8 @@ function initModels(sequelize) {
   recurrent_transaction.hasMany(recurrent_transaction_transaction, { as: "recurrent_transaction_transactions", foreignKey: "recurrent_transaction_id"});
   role_permission_access.belongsTo(role, { as: "role", foreignKey: "role_id"});
   role.hasMany(role_permission_access, { as: "role_permission_accesses", foreignKey: "role_id"});
+  seller_branch_office.belongsTo(seller, { as: "seller", foreignKey: "seller_id"});
+  seller.hasMany(seller_branch_office, { as: "seller_branch_offices", foreignKey: "seller_id"});
   customer.belongsTo(seller_customer_status, { as: "seller_customer_status", foreignKey: "seller_customer_status_id"});
   seller_customer_status.hasMany(customer, { as: "customers", foreignKey: "seller_customer_status_id"});
   seller.belongsTo(seller_customer_status, { as: "seller_customer_status", foreignKey: "seller_customer_status_id"});

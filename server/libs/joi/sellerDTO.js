@@ -12,7 +12,7 @@ const contacts = Joi.array().custom(contactObjectCustomValidation);
 const contact = Joi.number().min(1).max(9999999999);
 
 const SelectSeller = Joi.object({
-    offset: offset.required(),
+    offset: offset,
     code: code.allow(null, ''),
     name: name.allow(null, ''),
 });

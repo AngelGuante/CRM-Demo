@@ -9,11 +9,15 @@ const nameEntity = 'Seller';
 class SellerService {
     async Select(req) {
         const data = req.query;
-        const searchResult = await models.seller.findAll({
-            offset: data['offset'],
-            limit: SelectsTotalRegists,
-            attributes: [['seller_customer_status_id', 'status'], 'code', 'name'],
-            where: {
+        data['offset'] = data['offset'] === undefined ? 0 : data['offset'];
+        let where = {};
+
+        if ('equal' in data)
+            where = {
+                code: data['code']
+            }
+        else
+            where = {
                 code: {
                     [Op.like]: data['code'] ? `%${data['code']}%` : '%%'
                 },
@@ -21,8 +25,13 @@ class SellerService {
                     [Op.like]: data['name'] ? `%${data['name']}%` : '%%'
                 }
             }
-        });
-
+            const searchResult = await models.seller.findAll({
+                offset: data['offset'],
+                limit: SelectsTotalRegists,
+                attributes: [['seller_customer_status_id', 'status'], 'code', 'name'],
+                where: where
+            });
+            
         if (searchResult.length)
             return {
                 "status": 200,
@@ -70,7 +79,7 @@ class SellerService {
                     const seller = await models.seller.create({
                         code: dataFormated['code'],
                         name: dataFormated['name'],
-        
+
                         contacts: dataFormated['contacts']
                     });
 
@@ -122,7 +131,7 @@ class SellerService {
             }
         }
     }
-
+    
     async Update(req) {
         try {
             const userSigned = GetUserSigned(req);
@@ -133,7 +142,7 @@ class SellerService {
                 name: data.name.toLowerCase(),
 
                 contacts: data.contacts
-            };
+            }
 
             //Get seller to update
             const entity = await models.seller_branch_office.findOne({
@@ -148,7 +157,7 @@ class SellerService {
                         }
                     }
                 ]
-            });
+            })
 
             if (entity)
                 //Update entity

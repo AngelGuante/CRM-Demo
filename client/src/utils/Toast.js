@@ -1,5 +1,6 @@
 import toast from 'react-hot-toast';
 import { GetBrowserData, DeleteBrowserData } from '../utils/BrowserData';
+import { OptionsButtons } from '../componets/buttons/optionsButtons'
 
 const ErrorToast = (message) => toast.error(message)
 
@@ -21,9 +22,11 @@ const PromiseToast = async (myPromise, params) => {
 }
 
 const CustomToast = (type) => {
+    let toastCreated;
+
     switch (type) {
         case 'userInfo':
-            let toastCreated = toast.custom(
+            toastCreated = toast.custom(
                 () => (
                     <div className="col-md-2">
                         <div className="card card-widget widget-user">
@@ -37,17 +40,22 @@ const CustomToast = (type) => {
                             <div className="card-footer">
                                 <div className="row">
                                     <div className="col-sm border-right">
-                                        <button className="btn btn-app bg-danger" onClick={() => {
-                                            DeleteBrowserData(null, 'Login');
-                                            window.location.href = '/Login';
-                                        }}>
-                                            <i className="fas fa-door-open" /> Cerrar Sección
-                                        </button>
+                                        <OptionsButtons
+                                            className='btn btn-app bg-danger'
+                                            onclick={() => {
+                                                DeleteBrowserData(null, 'Login');
+                                                window.location.href = '/Login';
+                                            }}
+                                            icon='fas fa-door-open'
+                                            text='Cerrar Sección'
+                                        />
                                     </div>
                                     <div className="col-sm">
-                                        <button className="btn btn-app" onClick={() => toast.dismiss(toastCreated.id)}>
-                                            <i className="fas fa-times" /> Quitar
-                                        </button>
+                                        <OptionsButtons
+                                            onclick={() => toast.dismiss(toastCreated.id)}
+                                            icon='fas fa-times'
+                                            text='Quitar'
+                                        />
                                     </div>
                                 </div>
                             </div>

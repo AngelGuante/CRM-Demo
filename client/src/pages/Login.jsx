@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Post } from "../utils/Requests";
-import { FormInput } from '../componets/formInput'
+import { FormInput } from '../componets/inputs/formInput'
 import { Loading } from '../componets/loading'
 import { PromiseToast, ErrorToast } from '../utils/Toast'
 import { GetBrowserData, SaveBrowserData, DeleteBrowserData } from '../utils/BrowserData';
@@ -76,7 +76,7 @@ const LoginContainer = () => {
                 'loadingMessage': 'Accediendo',
                 'success': `Welcome ${form['user']}!`,
                 'error': 'Credenciales Incorrectos'
-            });
+            })
 
             if (response['status'] === 200) {
                 if (rememberLoginForm)
@@ -85,13 +85,13 @@ const LoginContainer = () => {
                         { name: 'user', value: form['user'] },
                         { name: 'pass', value: form['pass'] }
                     ], 'value');
-                SaveBrowserData(response, 'json');
+                SaveBrowserData(response, 'json')
 
-                window.location.href = '/Home';
+                window.location.href = '/Home'
             }
         } catch (Exception) { }
 
-        setLoading(false);
+        setLoading(false)
     }
 
     return (

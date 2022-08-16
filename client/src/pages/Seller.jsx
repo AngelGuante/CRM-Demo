@@ -1,15 +1,29 @@
-import { useEffect, useState, useRef } from "react";
-import { Get } from "../utils/Requests";
-import { TableFixedHeader } from "../componets/tableFixedHeader";
+import React, { useEffect, useState, useRef } from "react"
+import { Get } from "../utils/Requests"
+import { TableFixedHeader } from "../componets/tableFixedHeader"
+import { SellerCRUD } from "../utils/Modal"
+import { Post } from "../utils/Requests"
+import { PromiseToast, ErrorToast } from '../utils/Toast'
+
+//---------
+//- TO DO -
+//---------
+//*CUANDO HAY UN ERROR EN EL POST DEL UPDATE, SE QUEDA PEGADA LA APLICACION
+//*CUANDO SE EDITA UN VENDEDOR, NO SE PUEDEN GUARDAR LOS DATOS SIMILARES A OTRO EXISTENTE
 
 const SellerContainer = () => {
-    let sellersData = useRef([]);
-    const sellerFilled = useRef(false);
-    const [sellers, setSellers] = useState([]);
+    const [loading, setLoading] = useState(false)
+    let sellersData = useRef([])
+    const sellerFilled = useRef(false)
+    const [sellers, setSellers] = useState([])
     const [filterForm, setFilterForm] = useState({
         searchInput: '',
         selectOption: ''
-    });
+    })
+    const [sellerSelected, setSellerSelected] = useState({
+        id: '',
+        fullname: ''
+    })
 
     useEffect(() => {
         const fillSeller = async () => {
@@ -19,16 +33,7 @@ const SellerContainer = () => {
             }
         }
         fillSeller();
-    });
-
-    const handleFilterForm = (event) => {
-        setFilterForm({
-            ...filterForm,
-            [event.target.name]: event.target.value
-        });
-    };
-
-    const [loading, setLoading] = useState(false);
+    })
 
     const GetData = async () => {
         setLoading(true);
@@ -49,12 +54,71 @@ const SellerContainer = () => {
     }
 
     const FilterData = async () => {
-        sellersData.current = [];
-        GetData();
+        sellersData.current = []
+        GetData()
+    }
+
+    const TableRowClickEvent = async (index) => {
+        setLoading(true);
+        const data = (await Get(`seller/?code=${index}`))['message']
+
+        if (data) {
+            setSellerSelected({
+                id: data[0]['code'],
+                fullname: data[0]['name']
+            })
+            document.getElementById('btnTgl').click()
+        }
+        setLoading(false)
+    }
+
+    const EditSeller = async () => {
+        setLoading(true)
+
+        const response = await PromiseToast(await Post('seller/Update',
+        {
+            'code': sellerSelected['id'],
+            'name': sellerSelected['fullname'],
+            'status': 2
+        },
+        { 'token': true }), {
+            'loadingMessage': 'Actualizando registro',
+            'success': `Listo`,
+            'error': 'Algo salio mal'
+        })
+
+        if (response['status'] === 200)
+            FilterData()
+
+        setLoading(false)
+    }
+
+    const handleFilterForm = (event) => {
+        setFilterForm({
+            ...filterForm,
+            [event.target.name]: event.target.value
+        });
+    }
+
+    const handleInputChange = (event) => {
+        setSellerSelected({
+            ...sellerSelected,
+            [event.target.name]: event.target.value
+        })
     }
 
     return (
-        <div>
+        <>
+            <SellerCRUD
+                id={sellerSelected.id}
+                fullname={sellerSelected.fullname}
+                imputsChanged={handleInputChange}
+                sellerCRUDImputs={
+                    { 'name': 'fullname' }
+                }
+                edit={EditSeller}
+                loading={loading}
+            />
             <TableFixedHeader
                 tableHeader={'Distribuidores'}
                 loading={loading}
@@ -72,9 +136,10 @@ const SellerContainer = () => {
                     { 'name': 'Código' },
                     { 'name': 'Nombre' }]}
                 filterOnChange={handleFilterForm}
+                TableRowClickEvent={TableRowClickEvent}
             />
-        </div>
-    );
+        </>
+    )
 }
 
 export { SellerContainer }

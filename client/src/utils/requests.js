@@ -1,16 +1,22 @@
 import { DeleteBrowserData, SaveBrowserData, GetBrowserData } from './BrowserData';
 import { ErrorToast } from '../utils/Toast'
 
-const URL = 'http://localhost:3000/Api/';
+const URL = 'http://localhost:3000/Api/'
 
-const Post = async (serverMethod, data) =>
-    await (await fetch(`${URL}${serverMethod}`, {
+const Post = async (serverMethod, data, props) => {
+    const headers = {
+        'Content-Type': 'application/json'
+    }
+
+    if (props && 'token' in props)
+        headers['Authorization'] = `${GetBrowserData('token')}`
+
+    return await (await fetch(`${URL}${serverMethod}`, {
         method: 'POST',
         body: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })).json();
+        headers: headers
+    })).json()
+}
 
 const Get = async (serverMethod) => {
     const response = await fetch(`${URL}${serverMethod}`, {
@@ -20,20 +26,19 @@ const Get = async (serverMethod) => {
     });
 
     if (response['status'] === 204) {
-        ErrorToast('No Content');
-        return {};
+        ErrorToast('No Content')
+        return {}
     }
 
-    const json = await response.json();
-
+    const json = await response.json()
 
     if (json['status'] === 401) {
-        DeleteBrowserData(['token']);
-        SaveBrowserData([{ 'name': 'reazonRedirect', 'value': json['message'] }], 'value');
-        window.location.href = 'Login';
+        DeleteBrowserData(['token'])
+        SaveBrowserData([{ 'name': 'reazonRedirect', 'value': json['message'] }], 'value')
+        window.location.href = 'Login'
     }
 
-    return json;
+    return json
 }
 
 export {

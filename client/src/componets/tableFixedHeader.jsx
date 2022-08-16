@@ -8,17 +8,22 @@
     indexCol=bool               // Show index of rows
     getData={}                  // Method to get more data button
     filterData={}               // Method to get data filtered
-    filterOptions={[]}          // FIlter menu ootions of select
+    filterOptions={[]}          // FIlter menu options of select
     filterOnChange={}           // Method to change properties of filters
+    TableRowClickEvent={}       // Method when table row clicked
 /> 
 */
 
 import { Loading } from '../componets/loading'
 
-const TableFixedHeader = (proops) => {
+const TableFixedHeader = (props) => {
     // height of table
-    let height = proops['items'].length * 50;
-    height = (height > 800 ? 800 : height) + ('getData' in proops ? 80 : 40);
+    let height = props['items'].length * 50;
+    height = (height > 800 ? 800 : height) + ('getData' in props ? 80 : 40);
+
+    // event click of table 
+    const tableRowClicked = (e) =>
+        props.TableRowClickEvent(e['target']['parentElement'].children[props['indexCol'] ? 1 : 0].innerHTML)
 
     return (
         <div>
@@ -28,29 +33,29 @@ const TableFixedHeader = (proops) => {
                         <div className="col-12">
                             <div className="card">
 
-                                {proops['loading'] && <Loading />}
+                                {props['loading'] && <Loading />}
 
                                 <div className="card-header">
-                                    <h3 className="card-title">{proops['tableHeader'].toUpperCase()}</h3>
-                                    {'filterData' in proops &&
+                                    <h3 className="card-title">{props['tableHeader'].toUpperCase()}</h3>
+                                    {'filterData' in props &&
                                         <div className="card-tools">
-                                            <div className="input-group input-group-sm" style={{ width: (proops['filterOptions'] ? 300 : 200) }}>
+                                            <div className="input-group input-group-sm" style={{ width: (props['filterOptions'] ? 300 : 200) }}>
                                                 <div className="input-group-append">
                                                     <div className="input-group-append">
                                                         <input type="text" name="searchInput" className="form-control float-right" placeholder="Search"
-                                                            onChange={proops.filterOnChange} />
+                                                            onChange={props.filterOnChange} />
 
-                                                        {proops['filterOptions'] &&
+                                                        {props['filterOptions'] &&
                                                             <select className="form-control" name="selectOption"
-                                                                onChange={proops.filterOnChange}>
-                                                                {proops['filterOptions'].map((item, index) =>
+                                                                onChange={props.filterOnChange}>
+                                                                {props['filterOptions'].map((item, index) =>
                                                                     <option key={index} value={item['name']}>{item['name']}</option>
                                                                 )}
                                                             </select>}
                                                     </div>
 
                                                     <div className="input-group-append">
-                                                        <button type="submit" className="btn btn-default" onClick={proops.filterData}>
+                                                        <button type="submit" className="btn btn-default" onClick={props.filterData}>
                                                             <i className="fas fa-search" />
                                                         </button>
                                                     </div>
@@ -62,25 +67,27 @@ const TableFixedHeader = (proops) => {
                                     <table className="table table-head-fixed text-nowrap table-bordered table-hover">
                                         <thead>
                                             <tr>
-                                                {proops['indexCol'] && <td>#</td>}
-                                                {proops['columsHeaders'] && proops['columsHeaders'].map((column, index) =>
+                                                {props['indexCol'] && <td>#</td>}
+                                                {props['columsHeaders'] && props['columsHeaders'].map((column, index) =>
                                                     <td key={index}>{column['name'].toUpperCase()}</td>)}
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {proops['items'].map((item, index) =>
-                                                <tr data-widget="expandable-table" aria-expanded="false"
-                                                    key={index}>
-                                                    {proops['indexCol'] && <td key={'i' + index}>{index + 1}</td>}
-                                                    {proops['columsName'] && proops['columsName'].map((column, index) =>
+                                            {props['items'].map((item, index) =>
+                                                <tr id={props['tableHeader'].replaceAll(' ', '_').toLocaleLowerCase() + '_row_' + index}
+                                                    key={index}
+                                                    onClick={tableRowClicked}
+                                                    data-widget="expandable-table" aria-expanded="false">
+                                                    {props['indexCol'] && <td key={'i' + index}>{index + 1}</td>}
+                                                    {props['columsName'] && props['columsName'].map((column, index) =>
                                                         <td key={index}>{item[column['name']].toUpperCase()}</td>)}
                                                 </tr>
                                             )}
                                         </tbody>
                                     </table>
 
-                                    {('getData' in proops && proops['items'].length != 1) && <div className="col-md-12">
-                                        <button type="button" className="btn btn-default btn-block btn-sm" onClick={proops.getData}><i className="fas fa-angle-down"></i></button>
+                                    {('getData' in props && props['items'].length != 1) && <div className="col-md-12">
+                                        <button type="button" className="btn btn-default btn-block btn-sm" onClick={props.getData}><i className="fas fa-angle-down"></i></button>
                                     </div>}
                                 </div>
                             </div>
