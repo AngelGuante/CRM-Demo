@@ -23,7 +23,7 @@ const Get = async (serverMethod) => {
         headers: {
             'Authorization': `${GetBrowserData('token')}`
         }
-    });
+    })
 
     if (response['status'] === 204) {
         ErrorToast('No Content')

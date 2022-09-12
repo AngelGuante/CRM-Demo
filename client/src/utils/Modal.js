@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { DefaultInput } from '../componets/inputs/defaultInput'
 import { OptionsButtons } from '../componets/buttons/optionsButtons'
 import { Loading } from '../componets/loading'
@@ -7,11 +7,20 @@ import { Loading } from '../componets/loading'
 const SellerCRUD = (props) => {
     let [mode, setMode] = useState('')
 
-    const reset = () => setMode('')
+    const reset = () => setMode('see')
 
+    //Edit selected user and set de new values
     const edit = () => {
         props['edit']()
     }
+
+    const statusGetted = useRef(false)
+    useEffect(() => {
+        if (!statusGetted.current || props['mode'] === 'new') {
+            setMode(props['mode'])
+            statusGetted.current = true
+        }
+    }, [props])
 
     return (
         <div>
@@ -31,14 +40,22 @@ const SellerCRUD = (props) => {
                             <div className="card-body">
                                 <strong><i className="fas fa-book mr-1" /> Identificador</strong>
                                 {
-                                    <p className="text-muted">
-                                        {props['id']}
-                                    </p>
+                                    mode === 'new'
+                                        ?
+                                        <DefaultInput
+                                            value={props['id']}
+                                            name={props['sellerCRUDImputs']['id']}
+                                            onChange={props['imputsChanged']}
+                                        />
+                                        :
+                                        <p className="text-muted">
+                                            {props['id']}
+                                        </p>
                                 }
                                 <hr />
                                 <strong><i className="fas fa-map-marker-alt mr-1" /> Nombre</strong>
                                 {
-                                    mode === 'edit'
+                                    mode === 'edit' || mode === 'new'
                                         ?
                                         <DefaultInput
                                             value={props['fullname']}
@@ -54,7 +71,8 @@ const SellerCRUD = (props) => {
 
                                 <div className='row'>
                                     {
-                                        mode !== 'edit' ?
+                                        mode === 'see'
+                                            ?
                                             <OptionsButtons
                                                 onclick={() => {
                                                     setMode('edit')
@@ -63,7 +81,17 @@ const SellerCRUD = (props) => {
                                                 text='Editar'
                                             />
                                             :
-                                            ''
+                                            mode === 'new'
+                                                ?
+                                                <OptionsButtons
+                                                    onclick={() => {
+                                                        props['add']()
+                                                    }}
+                                                    icon='fas fa-plus'
+                                                    text='Agregar'
+                                                />
+                                                :
+                                                ''
                                     }
                                 </div>
                             </div>

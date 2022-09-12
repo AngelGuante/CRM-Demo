@@ -3,7 +3,8 @@ import { Get } from "../utils/Requests"
 import { TableFixedHeader } from "../componets/tableFixedHeader"
 import { SellerCRUD } from "../utils/Modal"
 import { Post } from "../utils/Requests"
-import { PromiseToast, ErrorToast } from '../utils/Toast'
+import { PromiseToast } from '../utils/Toast'
+import { FAB } from '../componets/buttons/FABS/FAB'
 
 //---------
 //- TO DO -
@@ -13,6 +14,7 @@ import { PromiseToast, ErrorToast } from '../utils/Toast'
 
 const SellerContainer = () => {
     const [loading, setLoading] = useState(false)
+    const [modalCRUDStatus, setModalCRUDStatus] = useState('see')
     let sellersData = useRef([])
     const sellerFilled = useRef(false)
     const [sellers, setSellers] = useState([])
@@ -28,11 +30,11 @@ const SellerContainer = () => {
     useEffect(() => {
         const fillSeller = async () => {
             if (!sellerFilled.current) {
-                sellerFilled.current = true;
+                sellerFilled.current = true
                 GetData();
             }
         }
-        fillSeller();
+        fillSeller()
     })
 
     const GetData = async () => {
@@ -67,30 +69,69 @@ const SellerContainer = () => {
                 id: data[0]['code'],
                 fullname: data[0]['name']
             })
-            document.getElementById('btnTgl').click()
+            setModalCRUDStatus('edit')
+            toogleModal()
         }
         setLoading(false)
     }
 
-    const EditSeller = async () => {
+    const EditSeller = async () =>
+        CRUDBaseMethod({
+            'method': 'Update',
+            'loadingAction': 'Actualizando',
+            'props': [
+                {
+                    'name': 'status',
+                    'value': 2
+                }
+            ]
+        })
+
+    const AddSeller = async () =>
+        CRUDBaseMethod({
+            'method': 'Insert',
+            'loadingAction': 'Creando'
+        })
+
+    const CRUDBaseMethod = async (params) => {
         setLoading(true)
 
-        const response = await PromiseToast(await Post('seller/Update',
-        {
+        const json = {
             'code': sellerSelected['id'],
-            'name': sellerSelected['fullname'],
-            'status': 2
-        },
-        { 'token': true }), {
-            'loadingMessage': 'Actualizando registro',
+            'name': sellerSelected['fullname']
+        }
+
+        //If there're more props than code and name.
+        if (params['props'])
+            params['props'].forEach(ele => {
+                console.log(ele)
+                json[ele['name']] = ele['value']
+            })
+
+        const response = await PromiseToast(await Post(`seller/${params['method']}`,
+            json,
+            { 'token': true }), {
+            'loadingMessage': `${params['loadingAction']} registro`,
             'success': `Listo`,
             'error': 'Algo salio mal'
         })
 
-        if (response['status'] === 200)
+        if (response['status'] === 200 || response['status'] === 201)
             FilterData()
 
+        toogleModal()
         setLoading(false)
+    }
+
+    const toogleModal = () => {
+        document.getElementById('btnTgl').click()
+    }
+
+    const ActionFAB = () => {
+        sellerSelected.id = ''
+        sellerSelected.fullname = ''
+        setModalCRUDStatus('new')
+        toogleModal()
     }
 
     const handleFilterForm = (event) => {
@@ -109,14 +150,22 @@ const SellerContainer = () => {
 
     return (
         <>
+            <FAB action={() => {
+                ActionFAB()
+            }} />
             <SellerCRUD
                 id={sellerSelected.id}
                 fullname={sellerSelected.fullname}
                 imputsChanged={handleInputChange}
                 sellerCRUDImputs={
-                    { 'name': 'fullname' }
+                    {
+                        'id': 'id',
+                        'name': 'fullname'
+                    }
                 }
+                mode={modalCRUDStatus}
                 edit={EditSeller}
+                add={AddSeller}
                 loading={loading}
             />
             <TableFixedHeader
